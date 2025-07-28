@@ -462,8 +462,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const subjectData = chaptersData[subject];
         if (!subjectData) return;
         
-        // Update subject title
+        // Update subject title and global variable
         subjectTitle.textContent = subjectData.title;
+        currentSubjectName = subjectData.title;
         
         // Clear existing chapters
         chaptersContent.innerHTML = '';
@@ -1514,7 +1515,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Skip the first card if it's "All Contents"
                         if (index === 0 && card.querySelector('.chapter-title').textContent === 'All Contents') {
                             card.addEventListener('click', function() {
-                                showChapterContent('All Contents', subjectData.title);
+                                showChapterContent('All Contents', currentSubjectName);
                             });
                         } else {
                             // Regular chapter cards
@@ -1522,7 +1523,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             if (subjectData.chapters[chapterIndex]) {
                                 const chapter = subjectData.chapters[chapterIndex];
                                 card.addEventListener('click', function() {
-                                    showChapterContent(chapter.name, subjectData.title);
+                                    showChapterContent(chapter.name, currentSubjectName);
                                 });
                             }
                         }
@@ -1656,6 +1657,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function displaySearchResults(videos, query) {
+        // Add cancel search button at the top
+        const cancelSearchButton = `
+            <div style="
+                display: flex;
+                justify-content: flex-start;
+                margin-bottom: 20px;
+                grid-column: 1 / -1;
+            ">
+                <button id="cancel-search-btn" class="cancel-search-button" style="
+                    background: #ff4757;
+                    color: white;
+                    border: none;
+                    padding: 10px 20px;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.3s ease;
+                ">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Chapters
+                </button>
+            </div>
+        `;
+        
         const resultsHTML = videos.map(video => {
             // Highlight search terms in title
             const highlightedTitle = highlightSearchTerm(video.title, query);
@@ -1681,7 +1711,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }).join('');
         
-        chaptersContent.innerHTML = resultsHTML;
+        chaptersContent.innerHTML = cancelSearchButton + resultsHTML;
         
         // Add click event listeners to search results
         const resultItems = chaptersContent.querySelectorAll('.search-result-card');
@@ -1692,14 +1722,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 const chapterName = this.getAttribute('data-chapter-name');
                 const subjectName = this.getAttribute('data-subject-name');
                 
-                // Clear search input
-                searchInput.value = '';
-                clearSearchBtn.style.display = 'none';
-                
-                // Open video
+                // Open video while preserving search state
                 openYouTubeVideo(videoUrl, videoTitle, chapterName, subjectName);
             });
         });
+        
+        // Add click event listener for cancel search button
+        const cancelSearchBtn = document.getElementById('cancel-search-btn');
+        if (cancelSearchBtn) {
+            cancelSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                clearSearchBtn.style.display = 'none';
+                restoreOriginalChapters();
+                searchInput.focus();
+            });
+        }
     }
     
     function highlightSearchTerm(text, searchTerm) {
@@ -1728,6 +1765,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     } // End of initializeSearch function
+    
+    // Function to open YouTube video in video player
+    function openYouTubeVideo(videoUrl, videoTitle, chapterName, subjectName) {
+        // Extract video ID from YouTube URL
+        const videoId = getYouTubeVideoId(videoUrl);
+        if (!videoId) {
+            console.error('Invalid YouTube URL:', videoUrl);
+            return;
+        }
+        
+        // Construct URL with parameters
+        const playerUrl = `video-player.html?v=${videoId}&title=${encodeURIComponent(videoTitle)}&chapter=${encodeURIComponent(chapterName)}&subject=${encodeURIComponent(subjectName)}`;
+        
+        // Open in new tab
+        window.open(playerUrl, '_blank');
+    }
+    
+    // Helper function to extract YouTube video ID
+    function getYouTubeVideoId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+    
+    // Make functions available globally
+    window.openYouTubeVideo = openYouTubeVideo;
+    window.getYouTubeVideoId = getYouTubeVideoId;
     
 }); // End of DOMContentLoaded
 
