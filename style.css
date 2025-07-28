@@ -16,10 +16,9 @@ body {
     color: #fff;
 }
 
-/* Apply zoom effect only on desktop devices */
 @media (min-width: 769px) {
     body {
-        zoom: 1.25; /* 125% zoom effect on desktop */
+        zoom: 1.25;
     }
 }
 
@@ -362,7 +361,7 @@ body {
 .subject-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    border-color: #00d4aa;
+    border-color: #009fd4;
 }
 
 .subject-icon {
@@ -624,7 +623,7 @@ body {
 }
 
 .tab-button.active {
-    background: #00d4aa;
+    background: #00a2ff;
     color: #fff;
 }
 
