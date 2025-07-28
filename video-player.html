@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Genius Hub - UDAY 2026</title>
+    <link rel="icon" type="image/png" sizes="any" href="https://gknodfvnbjkifcghajsf.supabase.co/storage/v1/object/sign/logo/logo.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lMTI1ZTg2Ny04ODI1LTRmMDktOTExNS01YjYyZDZmMmNlYTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJsb2dvL2xvZ28uanBnIiwiaWF0IjoxNzUxNjk1MzQwLCJleHAiOjMzMjU2MTU5MzQwfQ.ZKq1SAE3ShgV9gZiFJTov9CV9vNBimARDqnXJwkjZW4">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/plyr@3/dist/plyr.css" />
+    <style>
+        
+        /* Ensure body background shows through */
+        body {
+            background: linear-gradient(135deg, #000016 0%, #00122c 100%) !important;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .title {
+            letter-spacing: 5px !important;
+            padding-bottom: 0px !important;
+            padding-top: 0px !important;
+        }
+        
+        .video-player-container {
+            background: transparent;
+            min-height: calc(100vh - 80px);
+            padding: 0px 10px 10px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .video-content {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .video-wrapper {
+            border-radius: 0px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 15px;
+            width: 100%;
+            position: relative;
+        }
+        
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #00133fad;
+            backdrop-filter: blur(3px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            border-radius: 20px;
+        }
+        
+        .loading-spinner {
+            --ring-size: 64px;
+            --ring-thickness: 6px;
+            width: var(--ring-size);
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            background: conic-gradient(
+                #1e90ff 0deg,
+                #00b7eb 90deg,
+                #a21caf 180deg,
+                #ff6200 270deg,
+                #1e90ff 360deg
+            );
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-thickness)), #000 calc(100% - var(--ring-thickness)));
+            mask: radial-gradient(farthest-side, transparent calc(100% - var(--ring-thickness)), #000 calc(100% - var(--ring-thickness)));
+            animation: spin 1s linear infinite, glowPulse 1.6s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        .loading-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            background: linear-gradient(90deg, #1e90ff, #00b7eb, #1e90ff);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: 1px;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            text-shadow: 0 0 8px rgba(0, 144, 255, 0.8), 0 0 12px rgba(0, 110, 255, 0.6);
+            animation: fadeIn 0.5s forwards, gradientFlow 4s ease-in-out infinite;
+        }
+        
+        .loading-dots {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #1e90ff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0, 144, 255, 0.8), 0 0 12px rgba(0, 144, 255, 0.6);
+            animation: dots 1.4s ease-in-out infinite both;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0s; }
+        
+        .loading-progress {
+            width: 300px;
+            height: 8px;
+            background: rgba(0, 144, 255, 0.3);
+            border-radius: 15px;
+            margin-top: 25px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 144, 255, 0.7);
+            border: 2px solid #1e90ff;
+        }
+        
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(270deg, #00b7eb, #1e90ff, #00b7eb);
+            background-size: 300% 100%;
+            border-radius: 15px;
+            width: 0%;
+            transition: width 0.5s ease;
+            animation: progress 2.5s ease-in-out infinite, gradientFlow 5s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 144, 255, 0.9);
+        }
+        
+        .plyr {
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            border-radius: 0;
+            background: #000;
+        }
+        
+        .video-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600 ;
+            margin: 15px 0;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .video-buttons {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .video-button {
+            display: inline-block;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(45deg, #0088cc 0%, #00c4ff 50%, #0088cc 100%);
+            background-size: 400% 100%;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 15px rgba(0, 136, 204, 0.5),
+                0 2px 8px rgba(0, 0, 0, 0.3);
+            animation: gradientFlow 4s ease-in-out infinite;
+            touch-action: manipulation;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .video-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transition: left 0.5s ease;
+        }
+        
+        .video-button:active::before {
+            left: 100%;
+        }
+        
+        .video-button:active {
+            background: linear-gradient(45deg, #005f8c, #0099cc);
+            background-size: 100% 100%;
+            transform: scale(1.03);
+            box-shadow: 
+                0 6px 20px rgba(0, 136, 204, 0.7),
+                0 4px 12px rgba(0, 0, 0, 0.4);
+            animation: none;
+        }
+        
+        .video-button.secondary {
+            background: linear-gradient(45deg, #0088cc 0%, #00c4ff 50%, #0088cc 100%);
+            background-size: 400% 100%;
+            box-shadow: 
+                0 4px 15px rgba(0, 136, 204, 0.5),
+                0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .video-button.secondary:active {
+            background: linear-gradient(45deg, #005f8c, #0099cc);
+            background-size: 100% 100%;
+            box-shadow: 
+                0 6px 20px rgba(0, 136, 204, 0.7),
+                0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 200% 50%;
+            }
+            100% {
+                background-position: 400% 50%;
+            }
+        }
+        
+        .plyr__video-wrapper {
+            border-radius: 0px;
+            overflow: hidden;
+        }
+        /* Prevent any clicks from reaching the underlying YouTube iframe */
+        .plyr__video-embed iframe {
+            pointer-events: none !important;
+        }
+        
+        /* Hide YouTube share/copy link button */
+        .ytp-share-button,
+        .ytp-share-button-visible,
+        .ytp-copylink-button,
+        .ytp-watch-later-button,
+        .ytp-title-link,
+        .ytp-title,
+        .ytp-chrome-top,
+        .ytp-show-cards-title {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+        
+        /* Disable YouTube logo and title clicks */
+        .ytp-title-channel,
+        .ytp-title-text,
+        .ytp-youtube-button {
+            pointer-events: none !important;
+            cursor: default !important;
+        }
+        
+        /* Hide YouTube watermark/logo */
+        .ytp-watermark,
+        .ytp-youtube-button {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .video-player-container {
+                padding: 15px;
+                padding-top: 0px;
+            }
+            
+            .video-content {
+                max-width: 100%;
+            }
+            
+            .video-wrapper {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .plyr {
+                aspect-ratio: 16 / 9;
+            }
+            
+            .video-title {
+                font-size: 20px;
+                margin: 5px 0;
+            }
+            
+            /* Hide only volume slider on mobile, keep mute button */
+            .plyr__controls .plyr__volume input[type="range"] {
+                display: none !important;
+            }
+            
+            /* Keep mute button visible on mobile */
+            .plyr__controls button[data-plyr="mute"] {
+                display: block !important;
+            }
+
+        }
+        
+        /* Disable text selection and double-click fullscreen on video */
+        .plyr, .plyr__video-wrapper, .plyr iframe {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+        
+        /* Prevent double-click fullscreen */
+        .plyr__video-wrapper {
+            pointer-events: auto !important;
+        }
+        
+        /* Make rewind and forward SVG icons same size as other controls */
+        .plyr__controls [data-plyr="rewind"] svg,
+        .plyr__controls [data-plyr="fast-forward"] svg {
+            width: 18px !important;
+            height: 18px !important;
+        }
+        
+        @media (max-width: 480px) {
+            .video-player-container {
+                padding: 10px;
+            }
+            
+            .video-wrapper {
+                padding: 10px;
+            }
+            
+            .video-title {
+                font-size: 18px;
+                margin: 5px 0;
+            }
+            
+            /* Loading overlay tweaks for small screens */
+            .loading-spinner {
+                --ring-size: 48px;
+                --ring-thickness: 5px;
+            }
+            .loading-text {
+                font-size: 0.9em;
+            }
+            .loading-progress {
+                width: 200px;
+                height: 6px;
+            }
+            .loading-dots span {
+                width: 6px;
+                height: 6px;
+            }
+        }
+        
+        /* Keyframe Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 0px rgba(0, 183, 255, 0.0); }
+            50% { box-shadow: 0 0 18px rgba(0, 183, 255, 0.6); }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes dots {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 200% 50%;
+            }
+            100% {
+                background-position: 400% 50%;
+            }
+        }
+        
+        /* Mobile Fullscreen Landscape Optimization */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .plyr--fullscreen {
+                width: 100vw !important;
+                height: 100vh !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                z-index: 9999 !important;
+            }
+            
+            .plyr--fullscreen .plyr__video-wrapper {
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+            }
+            
+            .plyr--fullscreen iframe {
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
+        
+        /* Force landscape on mobile fullscreen */
+        @media screen and (max-width: 768px) {
+            .plyr--fullscreen {
+                transform: none !important;
+                width: 100vw !important;
+                height: 100vh !important;
+            }
+            
+            /* Hide mobile browser UI in fullscreen */
+            .plyr--fullscreen * {
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+        }
+        
+        /* Override video title styling for player page - show full title */
+        .video-title {
+            display: block !important;
+            -webkit-line-clamp: unset !important;
+            line-clamp: unset !important;
+            -webkit-box-orient: unset !important;
+            overflow: visible !important;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            text-align: center;
+            max-width: 100%;
+            background: rgba(20, 0, 119, 0.1);
+            color: linear-gradient(135deg, #87ceeb 0%, #4fc3f7 50%, #29b6f6 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 15px 20px;
+            background-image: linear-gradient(135deg, #b0ffa0 0%, #33ef72 50%, #29f6ca 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+  text-shadow: 
+  0 0 10px rgba(176, 255, 160, 0.3), 
+  0 0 20px rgba(51, 239, 114, 0.3), 
+  0 0 30px rgba(41, 246, 202, 0.3);
+
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <h1 class="title">GENIUS HUB</h1>
+    </header>
+
+    <div class="video-player-container">
+        <div class="video-content">
+            <div class="video-wrapper">
+                <div class="loading-screen" id="loadingScreen">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading Video</div>
+                    <div class="loading-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <div class="loading-progress">
+                        <div class="loading-progress-bar"></div>
+                    </div>
+                </div>
+                <div id="player" data-plyr-provider="youtube" style="display: none;"></div>
+            </div>
+            
+            <h1 class="video-title" id="videoTitle">Loading...</h1>
+            <div class="video-buttons">
+                <a href="https://t.me/pwuday2026" target="_blank" class="video-button" id="button1">Uday 2026</a>
+                <a href="https://t.me/genius_hub_official_01" target="_blank" class="video-button secondary" id="button2">Backup</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/plyr@3/dist/plyr.min.js"></script>
+    <script>
+        // Get video ID from URL parameters
+        function getVideoIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('v');
+        }
+        
+        // Get chapter and subject from URL parameters
+        function getChapterInfo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return {
+                chapter: urlParams.get('chapter'),
+                subject: urlParams.get('subject'),
+                title: urlParams.get('title')
+            };
+        }
+        
+        // Load video player
+        function loadVideoPlayer() {
+            const videoId = getVideoIdFromUrl();
+            const chapterInfo = getChapterInfo();
+            
+            if (!videoId) {
+                document.getElementById('loading').textContent = 'Error: No video ID provided';
+                return;
+            }
+            
+            // Set video title from URL parameter or use default
+            const videoTitle = chapterInfo.title || 'Video Lecture';
+            document.getElementById('videoTitle').textContent = videoTitle;
+            document.title = `${videoTitle} - UDAY 2026`;
+            
+            // Initialize Plyr player
+            initializePlyrPlayer(videoId);
+        }
+        
+        // Loading screen functions
+        function hideLoading() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.opacity = '0';
+            setTimeout(function () {
+                loadingScreen.style.display = 'none';
+            }, 500);
+        }
+        
+        function showLoading() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.display = 'flex';
+            loadingScreen.style.opacity = '1';
+        }
+        
+        function updateLoadingText(text) {
+            const loadingText = document.querySelector('.loading-text');
+            if (loadingText) {
+                loadingText.textContent = text;
+            }
+        }
+        
+        // Initialize Plyr player
+        function initializePlyrPlayer(videoId) {
+            const playerElement = document.getElementById('player');
+            
+            // Show loading screen
+            showLoading();
+            updateLoadingText('Loading Video');
+            
+            // Set the YouTube video ID
+            playerElement.setAttribute('data-plyr-embed-id', videoId);
+            
+            // Initialize Plyr
+            const player = new Plyr('#player', {
+                controls: [
+                    'play-large',
+                    'play',
+                    'rewind',
+                    'fast-forward',
+                    'progress', 
+                    'current-time',
+                    'duration',
+                    'mute',
+                    'volume',
+                    'settings',
+                    'fullscreen'
+                ],
+                settings: ['quality', 'speed', 'loop'],
+                clickToPlay: false,
+                dblClickFullscreen: false,
+                quality: {
+                    default: 'high', // Use high quality as default
+                    options: ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny', 'auto']
+                },
+                youtube: {
+                    noCookie: true,
+                    rel: 0,
+                    iv_load_policy: 3,
+                    modestbranding: 1,
+                    controls: 0, // hide native YouTube bar (keep Plyr controls)
+                    fs: 0,        // disable fullscreen button inside iframe UI (Plyr still handles fullscreen)
+                    disablekb: 1  // disable YouTube keyboard shortcuts
+                }
+            });
+            
+            // Store player globally for keyboard shortcuts
+            window.currentPlayer = player;
+            
+            // Show player and hide loading
+            setTimeout(() => {
+                hideLoading();
+                playerElement.style.display = 'block';
+            }, 1500);
+            
+            // Handle player events
+            player.on('ready', () => {
+                console.log('🎬 Plyr player ready');
+                updateLoadingText('Video Ready!');
+                
+                // Hide loading after a short delay
+                setTimeout(() => {
+                    hideLoading();
+                }, 800);
+                
+                // Wait for YouTube player to be fully ready before setting quality
+                const waitForYouTubeReady = (callback, attempts = 0) => {
+                    const maxAttempts = 20;
+                    
+                    if (attempts >= maxAttempts) {
+                        console.log('⚠️ YouTube player not ready after maximum attempts');
+                        return;
+                    }
+                    
+                    if (player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality) {
+                        const availableQualities = player.embed.getAvailableQualityLevels();
+                        console.log(`🔄 YouTube ready check (attempt ${attempts + 1}):`, availableQualities);
+                        
+                        if (availableQualities && availableQualities.length > 0) {
+                            console.log('✅ YouTube player is ready for quality setting');
+                            callback();
+                        } else {
+                            console.log(`⏳ Waiting for YouTube player to be ready...`);
+                            setTimeout(() => waitForYouTubeReady(callback, attempts + 1), 500);
+                        }
+                    } else {
+                        console.log(`⏳ Waiting for YouTube API to be available...`);
+                        setTimeout(() => waitForYouTubeReady(callback, attempts + 1), 500);
+                    }
+                };
+                
+                // YouTube quality management - set to highest available
+                const setYouTubeQuality = () => {
+                    if (player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality) {
+                        try {
+                            // Get available quality levels
+                            const availableQualities = player.embed.getAvailableQualityLevels();
+                            console.log('📺 Available YouTube qualities on ready:', availableQualities);
+                            
+                            if (availableQualities && availableQualities.length > 0) {
+                                // YouTube quality levels in order of preference
+                                const qualityPreference = ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+                                
+                                // Find the highest quality that's available
+                                let targetQuality = 'hd1080'; // Default fallback
+                                for (const quality of qualityPreference) {
+                                    if (availableQualities.includes(quality)) {
+                                        targetQuality = quality;
+                                        break;
+                                    }
+                                }
+                                
+                                // Set the quality
+                                player.embed.setPlaybackQuality(targetQuality);
+                                console.log('🎯 Setting YouTube quality on ready to:', targetQuality);
+                                
+                                // Confirm the quality was set with more aggressive retries
+                                let confirmAttempts = 0;
+                                const maxAttempts = 15; // Increase retry attempts
+                                const confirmQuality = () => {
+                                    confirmAttempts++;
+                                    const currentQuality = player.embed.getPlaybackQuality();
+                                    console.log(`✅ Current YouTube quality on ready (attempt ${confirmAttempts}):`, currentQuality);
+                                    
+                                    if (currentQuality !== targetQuality && confirmAttempts < maxAttempts) {
+                                        // Try setting quality again with more aggressive approach
+                                        player.embed.setPlaybackQuality(targetQuality);
+                                        console.log(`🔁 Retrying to set quality to ${targetQuality} (attempt ${confirmAttempts})`);
+                                        
+                                        // Add an additional quality setting after a short delay
+                                        setTimeout(() => {
+                                            player.embed.setPlaybackQuality(targetQuality);
+                                            console.log(`🔁 Additional quality set attempt ${confirmAttempts}`);
+                                        }, 100);
+                                        
+                                        setTimeout(confirmQuality, 800); // Increase delay between attempts
+                                    } else if (confirmAttempts >= maxAttempts) {
+                                        console.log('⚠️ Failed to set quality after maximum attempts');
+                                        
+                                        // Final attempt with a different approach
+                                        setTimeout(() => {
+                                            player.embed.setPlaybackQuality('highres');
+                                            console.log('🔧 Final attempt: Setting to highres');
+                                            
+                                            setTimeout(() => {
+                                                player.embed.setPlaybackQuality(targetQuality);
+                                                console.log('🔧 Final attempt: Setting back to target quality');
+                                            }, 300);
+                                        }, 500);
+                                    } else {
+                                        console.log('🎉 Successfully set YouTube quality to:', targetQuality);
+                                    }
+                                };
+                                
+                                setTimeout(confirmQuality, 300);
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Could not set YouTube quality on ready:', error);
+                        }
+                    }
+                };
+                
+                // Wait for YouTube to be ready, then set quality
+                waitForYouTubeReady(setYouTubeQuality);
+                
+                // Hide YouTube UI elements and disable interactions
+                setTimeout(() => {
+                    hideYouTubeElements();
+                }, 1000);
+            });
+            
+            player.on('play', () => {
+                console.log('▶️ Video started playing - ensuring highest quality...');
+                
+                // Wait for YouTube to be ready, then set quality
+                setTimeout(() => {
+                    const waitForYouTubeReady = (callback, attempts = 0) => {
+                        const maxAttempts = 10;
+                        
+                        if (attempts >= maxAttempts) {
+                            console.log('⚠️ YouTube player not ready after maximum attempts (on play)');
+                            return;
+                        }
+                        
+                        if (player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality) {
+                            const availableQualities = player.embed.getAvailableQualityLevels();
+                            console.log(`🔄 YouTube ready check on play (attempt ${attempts + 1}):`, availableQualities);
+                            
+                            if (availableQualities && availableQualities.length > 0) {
+                                console.log('✅ YouTube player is ready for quality setting (on play)');
+                                callback();
+                            } else {
+                                console.log(`⏳ Waiting for YouTube player to be ready (on play)...`);
+                                setTimeout(() => waitForYouTubeReady(callback, attempts + 1), 300);
+                            }
+                        } else {
+                            console.log(`⏳ Waiting for YouTube API to be available (on play)...`);
+                            setTimeout(() => waitForYouTubeReady(callback, attempts + 1), 300);
+                        }
+                    };
+                    
+                    const setYouTubeQuality = () => {
+                        if (player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality) {
+                            try {
+                                // Get available quality levels
+                                const availableQualities = player.embed.getAvailableQualityLevels();
+                                console.log('📺 Available YouTube qualities on play:', availableQualities);
+                                
+                                if (availableQualities && availableQualities.length > 0) {
+                                    // YouTube quality levels in order of preference
+                                    const qualityPreference = ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+                                    
+                                    // Find the highest quality that's available
+                                    let targetQuality = 'hd1080'; // Default fallback
+                                    for (const quality of qualityPreference) {
+                                        if (availableQualities.includes(quality)) {
+                                            targetQuality = quality;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Set the quality
+                                    player.embed.setPlaybackQuality(targetQuality);
+                                    console.log('🎯 Setting YouTube quality on play to:', targetQuality);
+                                    
+                                    // Confirm the quality was set with more aggressive retries
+                                    let confirmAttempts = 0;
+                                    const maxAttempts = 15; // Increase retry attempts
+                                    const confirmQuality = () => {
+                                        confirmAttempts++;
+                                        const currentQuality = player.embed.getPlaybackQuality();
+                                        console.log(`✅ Current YouTube quality on play (attempt ${confirmAttempts}):`, currentQuality);
+                                        
+                                        if (currentQuality !== targetQuality && confirmAttempts < maxAttempts) {
+                                            // Try setting quality again with more aggressive approach
+                                            player.embed.setPlaybackQuality(targetQuality);
+                                            console.log(`🔁 Retrying to set quality to ${targetQuality} (attempt ${confirmAttempts})`);
+                                            
+                                            // Add an additional quality setting after a short delay
+                                            setTimeout(() => {
+                                                player.embed.setPlaybackQuality(targetQuality);
+                                                console.log(`🔁 Additional quality set attempt ${confirmAttempts}`);
+                                            }, 100);
+                                            
+                                            setTimeout(confirmQuality, 800); // Increase delay between attempts
+                                        } else if (confirmAttempts >= maxAttempts) {
+                                            console.log('⚠️ Failed to set quality after maximum attempts');
+                                            
+                                            // Final attempt with a different approach
+                                            setTimeout(() => {
+                                                player.embed.setPlaybackQuality('highres');
+                                                console.log('🔧 Final attempt: Setting to highres');
+                                                
+                                                setTimeout(() => {
+                                                    player.embed.setPlaybackQuality(targetQuality);
+                                                    console.log('🔧 Final attempt: Setting back to target quality');
+                                                }, 300);
+                                            }, 500);
+                                        } else {
+                                            console.log('🎉 Successfully set YouTube quality to:', targetQuality);
+                                        }
+                                    };
+                                    
+                                    setTimeout(confirmQuality, 300);
+                                }
+                            } catch (error) {
+                                console.log('⚠️ Could not set YouTube quality on play:', error);
+                            }
+                        }
+                    };
+                    
+                    // Wait for YouTube to be ready, then set quality
+                    waitForYouTubeReady(setYouTubeQuality);
+                }, 300); // Initial delay
+            });
+            
+            player.on('qualitychange', (event) => {
+                console.log('🔍 Quality changed to:', event.detail.quality);
+            });
+            
+            // Store player reference for manual controls
+            window.currentPlayer = player;
+            // Periodically check and maintain quality during playback with more aggressive enforcement
+            let qualityCheckInterval;
+            player.on('play', () => {
+                // Clear any existing interval
+                if (qualityCheckInterval) {
+                    clearInterval(qualityCheckInterval);
+                }
+                
+                // Check if device is mobile for more aggressive quality enforcement
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                // Set up periodic quality check with more frequent checks initially
+                let checkCount = 0;
+                const maxInitialChecks = isMobile ? 20 : 10; // More frequent checks for mobile
+                const initialInterval = setInterval(() => {
+                    if (player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality && !player.paused) {
+                        try {
+                            const availableQualities = player.embed.getAvailableQualityLevels();
+                            if (availableQualities && availableQualities.length > 0) {
+                                // Find the highest quality that's available
+                                // For mobile, prefer hd720 for better experience
+                                const qualityPreference = isMobile ? 
+                                    ['hd720', 'hd1080', 'hd1440', 'hd2160', 'highres', 'large', 'medium', 'small', 'tiny'] : 
+                                    ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+                                let targetQuality = isMobile ? 'hd720' : 'hd1080'; // Default fallback
+                                for (const quality of qualityPreference) {
+                                    if (availableQualities.includes(quality)) {
+                                        targetQuality = quality;
+                                        break;
+                                    }
+                                }
+                                
+                                // Only set if needed
+                                const currentQuality = player.embed.getPlaybackQuality();
+                                if (currentQuality !== targetQuality) {
+                                    player.embed.setPlaybackQuality(targetQuality);
+                                    console.log('🔧 Aggressive quality enforcement (' + (isMobile ? 'mobile' : 'desktop') + '):', targetQuality);
+                                    
+                                    // Additional setting to ensure it takes effect, more aggressive for mobile
+                                    const additionalDelay = isMobile ? 100 : 200;
+                                    setTimeout(() => {
+                                        player.embed.setPlaybackQuality(targetQuality);
+                                        console.log('🔧 Additional quality enforcement (' + (isMobile ? 'mobile' : 'desktop') + '):', targetQuality);
+                                    }, additionalDelay);
+                                    
+                                    // Extra setting for mobile devices
+                                    if (isMobile) {
+                                        setTimeout(() => {
+                                            player.embed.setPlaybackQuality(targetQuality);
+                                            console.log('🔧 Extra mobile quality enforcement:', targetQuality);
+                                        }, 400);
+                                    }
+                                } else {
+                                    console.log('✅ Quality is already set correctly (' + (isMobile ? 'mobile' : 'desktop') + '):', targetQuality);
+                                }
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Error in aggressive quality check:', error);
+                        }
+                    }
+                    
+                    checkCount++;
+                    if (checkCount >= maxInitialChecks) {
+                        clearInterval(initialInterval);
+                        
+                        // Set up regular periodic check - more frequent for mobile
+                        const checkInterval = isMobile ? 3000 : 5000; // Every 3 seconds for mobile, 5 for desktop
+                        qualityCheckInterval = setInterval(() => {
+                            if (player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality && !player.paused) {
+                                try {
+                                    const availableQualities = player.embed.getAvailableQualityLevels();
+                                    if (availableQualities && availableQualities.length > 0) {
+                                        // Find the highest quality that's available
+                                        const qualityPreference = isMobile ? 
+                                            ['hd720', 'hd1080', 'hd1440', 'hd2160', 'highres', 'large', 'medium', 'small', 'tiny'] : 
+                                            ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+                                        let targetQuality = isMobile ? 'hd720' : 'hd1080'; // Default fallback
+                                        for (const quality of qualityPreference) {
+                                            if (availableQualities.includes(quality)) {
+                                                targetQuality = quality;
+                                                break;
+                                            }
+                                        }
+                                        
+                                        // Only set if needed
+                                        const currentQuality = player.embed.getPlaybackQuality();
+                                        if (currentQuality !== targetQuality) {
+                                            player.embed.setPlaybackQuality(targetQuality);
+                                            console.log('🔧 Periodic quality enforcement (' + (isMobile ? 'mobile' : 'desktop') + '):', targetQuality);
+                                            
+                                            // Additional setting to ensure it takes effect
+                                            setTimeout(() => {
+                                                player.embed.setPlaybackQuality(targetQuality);
+                                                console.log('🔧 Additional periodic quality enforcement (' + (isMobile ? 'mobile' : 'desktop') + '):', targetQuality);
+                                            }, 200);
+                                            
+                                            // Extra setting for mobile devices
+                                            if (isMobile) {
+                                                setTimeout(() => {
+                                                    player.embed.setPlaybackQuality(targetQuality);
+                                                    console.log('🔧 Extra periodic mobile quality enforcement:', targetQuality);
+                                                }, 400);
+                                            }
+                                        }
+                                    }
+                                } catch (error) {
+                                    console.log('⚠️ Error in periodic quality check:', error);
+                                }
+                            }
+                        }, checkInterval);
+                    }
+                }, isMobile ? 300 : 500); // Check more frequently for mobile (every 300ms)
+            });
+            
+            player.on('ended', () => {
+                if (qualityCheckInterval) {
+                    clearInterval(qualityCheckInterval);
+                    qualityCheckInterval = null;
+                }
+            });
+            
+            player.on('error', (event) => {
+                console.error('Plyr error:', event);
+                showVideoFallback(videoId, document.getElementById('videoTitle').textContent);
+            });
+            
+            // Mobile fullscreen landscape handling
+            player.on('enterfullscreen', () => {
+                console.log('Entered fullscreen');
+                
+                // Check if device is mobile
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    // Force landscape orientation on mobile devices
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(err => {
+                            console.log('Screen orientation lock failed:', err);
+                            // Fallback: Try to request landscape using deprecated API
+                            if (screen.lockOrientation) {
+                                screen.lockOrientation('landscape');
+                            }
+                        });
+                    } else if (screen.lockOrientation) {
+                        // Fallback for older browsers
+                        screen.lockOrientation('landscape');
+                    }
+                    
+                    // Add CSS to ensure proper fullscreen display on mobile
+                    document.body.style.transform = 'rotate(0deg)';
+                    document.body.style.transformOrigin = 'center';
+                }
+            });
+            
+            player.on('exitfullscreen', () => {
+                console.log('Exited fullscreen');
+                
+                // Check if device is mobile
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    // Unlock orientation when exiting fullscreen
+                    if (screen.orientation && screen.orientation.unlock) {
+                        screen.orientation.unlock();
+                    } else if (screen.unlockOrientation) {
+                        // Fallback for older browsers
+                        screen.unlockOrientation();
+                    }
+                    
+                    // Reset any transforms
+                    document.body.style.transform = '';
+                    document.body.style.transformOrigin = '';
+                }
+            });
+            
+            // Automatically set higher quality for mobile devices
+            player.on('ready', () => {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                    console.log('📱 Mobile device detected, setting higher quality');
+                    // Force higher quality for mobile devices
+                    setTimeout(() => {
+                        forceMobileQuality(player);
+                    }, 500);
+                }
+            });
+            
+            // Function to force higher quality on mobile devices
+            function forceMobileQuality(player) {
+                if (player && player.embed && player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality) {
+                    try {
+                        const availableQualities = player.embed.getAvailableQualityLevels();
+                        if (availableQualities && availableQualities.length > 0) {
+                            // Prefer hd720 for mobile devices for better experience
+                            const preferredQualities = ['hd720', 'hd1080', 'large', 'medium'];
+                            let targetQuality = 'medium'; // Fallback
+                            
+                            // Find the best available quality
+                            for (const quality of preferredQualities) {
+                                if (availableQualities.includes(quality)) {
+                                    targetQuality = quality;
+                                    break;
+                                }
+                            }
+                            
+                            // Force set the quality multiple times
+                            player.embed.setPlaybackQuality(targetQuality);
+                            setTimeout(() => player.embed.setPlaybackQuality(targetQuality), 100);
+                            setTimeout(() => player.embed.setPlaybackQuality(targetQuality), 300);
+                            
+                            console.log('🔧 Forced YouTube quality for mobile to:', targetQuality);
+                        }
+                    } catch (error) {
+                        console.log('⚠️ Error forcing mobile quality:', error);
+                    }
+                }
+            }
+            
+            // Add custom 10-second skip functionality
+            setupSkipButtons(player);
+            
+            // Add YouTube-style double-tap functionality
+            setupDoubleTapSkip(player);
+            
+            // Completely disable double-click fullscreen
+            disableDoubleClickFullscreen(player);
+        }
+        
+        // Function to setup 10-second skip buttons
+        function setupSkipButtons(player) {
+            // Replace icons immediately when controls are available
+            const replaceIcons = () => {
+                // Find and customize the rewind button
+                const rewindBtn = document.querySelector('[data-plyr="rewind"]');
+                if (rewindBtn) {
+                    rewindBtn.removeAttribute('data-plyr');
+                    rewindBtn.addEventListener('click', () => skipVideo(player, -10));
+                    rewindBtn.title = 'Rewind 10 seconds';
+                    
+                    // Replace with custom SVG icon
+                    const svgIcon = rewindBtn.querySelector('svg');
+                    if (svgIcon) {
+                        svgIcon.innerHTML = `
+                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
+                        `;
+                        svgIcon.setAttribute('viewBox', '0 0 24 24');
+                    }
+                }
+                
+                // Find and customize the forward button
+                const forwardBtn = document.querySelector('[data-plyr="fast-forward"]');
+                if (forwardBtn) {
+                    forwardBtn.removeAttribute('data-plyr');
+                    forwardBtn.addEventListener('click', () => skipVideo(player, 10));
+                    forwardBtn.title = 'Forward 10 seconds';
+                    
+                    // Replace with custom SVG icon (mirrored version)
+                    const svgIcon = forwardBtn.querySelector('svg');
+                    if (svgIcon) {
+                        svgIcon.innerHTML = `
+                            <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" transform="scale(-1, 1) translate(-24, 0)" />
+                        `;
+                        svgIcon.setAttribute('viewBox', '0 0 24 24');
+                    }
+                }
+            };
+            
+            // Try to replace icons immediately
+            setTimeout(replaceIcons, 100);
+            
+            // Also try when player is ready
+            player.on('ready', () => {
+                setTimeout(replaceIcons, 200);
+            });
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+                    return;
+                }
+                
+                if (e.key === 'ArrowLeft' || e.key === 'j' || e.key === 'J') {
+                    e.preventDefault();
+                    skipVideo(player, -10);
+                } else if (e.key === 'ArrowRight' || e.key === 'l' || e.key === 'L') {
+                    e.preventDefault();
+                    skipVideo(player, 10);
+                }
+            });
+        }
+        
+        // Function to skip video by specified seconds
+        function skipVideo(player, seconds) {
+            try {
+                if (player && player.embed && player.embed.getCurrentTime) {
+                    const currentTime = player.embed.getCurrentTime();
+                    const newTime = Math.max(0, currentTime + seconds);
+                    
+                    if (player.embed.seekTo) {
+                        player.embed.seekTo(newTime, true);
+                        console.log(`⏩ Skipped ${seconds} seconds to ${newTime}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error skipping video:', error);
+            }
+        }
+        
+        // Function to setup YouTube-style double-tap skip
+        function setupDoubleTapSkip(player) {
+            player.on('ready', () => {
+                const videoContainer = document.querySelector('.plyr__video-wrapper') || document.querySelector('.plyr');
+                if (!videoContainer) return;
+                
+                let tapCount = 0;
+                let tapTimer = null;
+                let lastTapTime = 0;
+                
+                videoContainer.addEventListener('click', (e) => {
+                    const currentTime = Date.now();
+                    const timeDiff = currentTime - lastTapTime;
+                    
+                    // Reset if too much time passed
+                    if (timeDiff > 300) {
+                        tapCount = 0;
+                    }
+                    
+                    tapCount++;
+                    lastTapTime = currentTime;
+                    
+                    // Clear existing timer
+                    if (tapTimer) {
+                        clearTimeout(tapTimer);
+                    }
+                    
+                    // Double tap detected
+                    if (tapCount === 2) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const rect = videoContainer.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const containerWidth = rect.width;
+                        
+                        // Left side - rewind
+                        if (clickX < containerWidth / 2) {
+                            skipVideo(player, -10);
+                            showDoubleTapIndicator('left');
+                        } 
+                        // Right side - forward
+                        else {
+                            skipVideo(player, 10);
+                            showDoubleTapIndicator('right');
+                        }
+                        
+                        tapCount = 0;
+                    } else {
+                        // Single tap - wait to see if there's a second tap
+                        tapTimer = setTimeout(() => {
+                            tapCount = 0;
+                        }, 300);
+                    }
+                });
+            });
+        }
+        
+        // Function to show double-tap skip indicator
+        function showDoubleTapIndicator(side) {
+            // Remove existing indicator
+            const existingIndicator = document.getElementById('doubleTapIndicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+            
+            const videoContainer = document.querySelector('.plyr__video-wrapper') || document.querySelector('.plyr');
+            if (!videoContainer) return;
+            
+            // Create main indicator container
+            const indicator = document.createElement('div');
+            indicator.id = 'doubleTapIndicator';
+            
+            const isLeft = side === 'left';
+            
+            // Create the cool circular indicator with ripple effect
+            indicator.innerHTML = `
+                <div class="skip-circle">
+                    <div class="skip-ripple"></div>
+                    <div class="skip-content">
+                        <div class="skip-arrows">
+                            ${isLeft ? '««' : '»»'}
+                        </div>
+                        <div class="skip-text">${isLeft ? '10' : '10'}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Position indicator properly - closer to center but still on sides
+            indicator.style.cssText = `
+                position: absolute;
+                top: 50%;
+                ${isLeft ? 'left: 15%' : 'right: 15%'};
+                transform: translateY(-50%);
+                z-index: 1000;
+                pointer-events: none;
+                animation: skipIndicatorShow 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            `;
+            
+            // Add the awesome CSS styles
+            if (!document.getElementById('coolSkipStyles')) {
+                const style = document.createElement('style');
+                style.id = 'coolSkipStyles';
+                style.textContent = `
+                    .skip-circle {
+                        position: relative;
+                        width: 80px;
+                        height: 80px;
+                        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+                        border: 2px solid rgba(255, 255, 255, 0.2);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        backdrop-filter: blur(20px);
+                        box-shadow: 
+                            0 8px 32px rgba(0, 0, 0, 0.3),
+                            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                    }
+                    
+                    .skip-ripple {
+                        position: absolute;
+                        top: -10px;
+                        left: -10px;
+                        right: -10px;
+                        bottom: -10px;
+                        border: 3px solid rgba(255, 255, 255, 0.6);
+                        border-radius: 50%;
+                        animation: rippleEffect 1.8s ease-out;
+                    }
+                    
+                    .skip-content {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        color: white;
+                        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+                    }
+                    
+                    .skip-arrows {
+                        font-size: 24px;
+                        font-weight: bold;
+                        line-height: 1;
+                        margin-bottom: 2px;
+                    }
+                    
+                    .skip-text {
+                        font-size: 14px;
+                        font-weight: 600;
+                        opacity: 0.9;
+                    }
+                    
+                    @keyframes skipIndicatorShow {
+                        0% {
+                            opacity: 0;
+                            transform: translateY(-50%) scale(0.3);
+                        }
+                        20% {
+                            opacity: 1;
+                            transform: translateY(-50%) scale(1.2);
+                        }
+                        40% {
+                            transform: translateY(-50%) scale(1);
+                        }
+                        85% {
+                            opacity: 1;
+                            transform: translateY(-50%) scale(1);
+                        }
+                        100% {
+                            opacity: 0;
+                            transform: translateY(-50%) scale(0.8);
+                        }
+                    }
+                    
+                    @keyframes rippleEffect {
+                        0% {
+                            transform: scale(0.8);
+                            opacity: 1;
+                        }
+                        50% {
+                            transform: scale(1.2);
+                            opacity: 0.5;
+                        }
+                        100% {
+                            transform: scale(1.8);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            videoContainer.style.position = 'relative';
+            videoContainer.appendChild(indicator);
+            
+            // Remove indicator after animation
+            setTimeout(() => {
+                if (indicator.parentNode) {
+                    indicator.remove();
+                }
+            }, 1800);
+        }
+        
+        // Function to completely disable double-click fullscreen
+        function disableDoubleClickFullscreen(player) {
+            player.on('ready', () => {
+                const videoContainer = document.querySelector('.plyr__video-wrapper') || document.querySelector('.plyr');
+                const iframe = document.querySelector('.plyr iframe');
+                
+                // Disable double-click on video container
+                if (videoContainer) {
+                    videoContainer.addEventListener('dblclick', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }, true);
+                }
+                
+                // Disable double-click on iframe
+                if (iframe) {
+                    iframe.addEventListener('dblclick', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }, true);
+                }
+                
+                // Also disable on the main plyr element
+                const plyrElement = document.querySelector('.plyr');
+                if (plyrElement) {
+                    plyrElement.addEventListener('dblclick', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }, true);
+                }
+            });
+        }
+        
+        // Function to hide YouTube UI elements
+        function hideYouTubeElements() {
+            // Use MutationObserver to hide elements as they appear
+            const observer = new MutationObserver(() => {
+                document.querySelectorAll('.ytp-share-button, .ytp-copylink-button, .ytp-youtube-button, .ytp-watermark').forEach(el => {
+                    el.style.display = 'none';
+                    el.style.visibility = 'hidden';
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
+        
+        // Function to show quality information on screen
+        function showQualityInfo(currentQuality, availableQualities) {
+            // Remove existing quality info if present
+            const existingInfo = document.getElementById('qualityInfo');
+            if (existingInfo) {
+                existingInfo.remove();
+            }
+            
+            // Create quality info display
+            const qualityInfo = document.createElement('div');
+            qualityInfo.id = 'qualityInfo';
+            qualityInfo.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                padding: 10px 15px;
+                border-radius: 8px;
+                font-family: 'Segoe UI', sans-serif;
+                font-size: 12px;
+                z-index: 9999;
+                border: 1px solid rgba(0, 212, 170, 0.3);
+                backdrop-filter: blur(10px);
+                transition: opacity 0.3s ease;
+            `;
+            
+            qualityInfo.innerHTML = `
+                <div style="margin-bottom: 5px; color: #00d4aa; font-weight: 600;">🎥 Video Quality</div>
+                <div>Current: <span style="color: #00d4aa; font-weight: 600;">${currentQuality}</span></div>
+                <div style="font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 3px;">Available: ${availableQualities.join(', ')}</div>
+            `;
+            
+            document.body.appendChild(qualityInfo);
+            
+            // Auto-hide after 8 seconds
+            setTimeout(() => {
+                if (qualityInfo && qualityInfo.parentNode) {
+                    qualityInfo.style.opacity = '0';
+                    setTimeout(() => {
+                        if (qualityInfo && qualityInfo.parentNode) {
+                            qualityInfo.remove();
+                        }
+                    }, 300);
+                }
+            }, 8000);
+        }
+        
+        function showVideoFallback(videoId, videoTitle) {
+            const loading = document.getElementById('loading');
+            const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+            
+            loading.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <h3 style="color: #ff6b6b; margin-bottom: 20px;">⚠️ Video Embedding Restricted</h3>
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 30px; line-height: 1.6;">
+                        This video cannot be embedded due to YouTube's restrictions.<br>
+                        Click the button below to watch it directly on YouTube.
+                    </p>
+                    <a href="${youtubeUrl}" target="_blank" style="
+                        background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+                        color: white;
+                        padding: 15px 30px;
+                        border-radius: 10px;
+                        text-decoration: none;
+                        font-weight: 600;
+                        display: inline-block;
+                        transition: transform 0.3s ease;
+                    " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">🎥 Watch on YouTube</a>
+                </div>
+            `;
+            loading.style.display = 'block';
+        }
+        
+
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Q key - show quality info
+            if (e.key.toLowerCase() === 'q' && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+                // Get current player instance
+                const playerElement = document.getElementById('player');
+                if (playerElement && window.currentPlayer && window.currentPlayer.embed) {
+                    const player = window.currentPlayer;
+                    
+                    if (player.embed.getPlaybackQuality && player.embed.getAvailableQualityLevels) {
+                        const currentQuality = player.embed.getPlaybackQuality();
+                        const availableQualities = player.embed.getAvailableQualityLevels();
+                        
+                        console.log('🎮 Manual quality check:');
+                        console.log('🎥 Current quality:', currentQuality);
+                        console.log('📺 Available qualities:', availableQualities);
+                        console.log('📊 Player state:', {
+                            paused: player.paused,
+                            duration: player.duration,
+                            currentTime: player.currentTime,
+                            ready: player.ready
+                        });
+                        
+                        // Show on screen
+                        if (availableQualities && availableQualities.length > 0) {
+                            showQualityInfo(currentQuality, availableQualities);
+                        } else {
+                            // Show fallback info
+                            console.log('⚠️ No qualities available - showing fallback info');
+                            showQualityInfo(currentQuality || 'unknown', ['Quality levels not available']);
+                        }
+                    }
+                }
+            }
+            
+            // F key - force highest quality
+            if (e.key.toLowerCase() === 'f' && !e.ctrlKey && !e.altKey && !e.shiftKey) {
+                // Get current player instance
+                const playerElement = document.getElementById('player');
+                if (playerElement && window.currentPlayer && window.currentPlayer.embed) {
+                    const player = window.currentPlayer;
+                    
+                    // Check if device is mobile
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    
+                    if (player.embed.getAvailableQualityLevels && player.embed.setPlaybackQuality) {
+                        try {
+                            const availableQualities = player.embed.getAvailableQualityLevels();
+                            if (availableQualities && availableQualities.length > 0) {
+                                // Find the highest quality that's available
+                                // For mobile, prefer hd720 for better experience
+                                const qualityPreference = isMobile ? 
+                                    ['hd720', 'hd1080', 'hd1440', 'hd2160', 'highres', 'large', 'medium', 'small', 'tiny'] : 
+                                    ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+                                let targetQuality = isMobile ? 'hd720' : 'hd1080'; // Default fallback
+                                for (const quality of qualityPreference) {
+                                    if (availableQualities.includes(quality)) {
+                                        targetQuality = quality;
+                                        break;
+                                    }
+                                }
+                                
+                                // Force set the quality multiple times
+                                player.embed.setPlaybackQuality(targetQuality);
+                                setTimeout(() => player.embed.setPlaybackQuality(targetQuality), 100);
+                                setTimeout(() => player.embed.setPlaybackQuality(targetQuality), 300);
+                                
+                                console.log('🔧 Forced YouTube quality to (' + (isMobile ? 'mobile' : 'desktop') + '):', targetQuality);
+                                
+                                // Show confirmation
+                                const infoDiv = document.createElement('div');
+                                infoDiv.style.cssText = `
+                                    position: fixed;
+                                    top: 20px;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background: rgba(0, 212, 170, 0.9);
+                                    color: white;
+                                    padding: 10px 20px;
+                                    border-radius: 8px;
+                                    font-family: 'Segoe UI', sans-serif;
+                                    font-size: 14px;
+                                    font-weight: 600;
+                                    z-index: 9999;
+                                    backdrop-filter: blur(10px);
+                                    transition: opacity 0.3s ease;
+                                `;
+                                infoDiv.textContent = `Forced quality to: ${targetQuality} (${isMobile ? 'mobile' : 'desktop'})`;
+                                document.body.appendChild(infoDiv);
+                                
+                                // Auto-hide after 3 seconds
+                                setTimeout(() => {
+                                    infoDiv.style.opacity = '0';
+                                    setTimeout(() => {
+                                        if (infoDiv.parentNode) {
+                                            infoDiv.remove();
+                                        }
+                                    }, 300);
+                                }, 3000);
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Error forcing quality:', error);
+                            
+                            // Show error message
+                            const errorDiv = document.createElement('div');
+                            errorDiv.style.cssText = `
+                                position: fixed;
+                                top: 20px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                background: rgba(255, 107, 107, 0.9);
+                                color: white;
+                                padding: 10px 20px;
+                                border-radius: 8px;
+                                font-family: 'Segoe UI', sans-serif;
+                                font-size: 14px;
+                                font-weight: 600;
+                                z-index: 9999;
+                                backdrop-filter: blur(10px);
+                                transition: opacity 0.3s ease;
+                            `;
+                            errorDiv.textContent = 'Error forcing quality';
+                            document.body.appendChild(errorDiv);
+                            
+                            // Auto-hide after 3 seconds
+                            setTimeout(() => {
+                                errorDiv.style.opacity = '0';
+                                setTimeout(() => {
+                                    if (errorDiv.parentNode) {
+                                        errorDiv.remove();
+                                    }
+                                }, 300);
+                            }, 3000);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', loadVideoPlayer);
+    </script>
+</body>
+</html>

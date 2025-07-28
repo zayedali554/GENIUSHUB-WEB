@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDAY 2026 - CLASS 11</title>
+    <link rel="icon" type="image/png" sizes="any" href="https://gknodfvnbjkifcghajsf.supabase.co/storage/v1/object/sign/logo/logo.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lMTI1ZTg2Ny04ODI1LTRmMDktOTExNS01YjYyZDZmMmNlYTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJsb2dvL2xvZ28uanBnIiwiaWF0IjoxNzUxNjk1MzQwLCJleHAiOjMzMjU2MTU5MzQwfQ.ZKq1SAE3ShgV9gZiFJTov9CV9vNBimARDqnXJwkjZW4">
+    <link rel="stylesheet" href="style.css">
+    <script src="youtube-config.js"></script>
+    <script src="sheet-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="Live/config.js"></script>
+</head>
+<body>
+    <div id="telegramPopup" class="popup">
+        <div class="popup-content">
+            <span class="popup-close">×</span>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Icon" class="telegram-icon">
+            <h2>Join Our Telegram Channel!</h2>
+            <p>All lectures are uploaded here first !</p>
+            <a href="https://t.me/genius_hub_official_01" target="_blank" class="telegram-btn">Join Now</a>
+        </div>
+    </div>
+
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <h1 class="title">GENIUS HUB</h1>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Initial Card -->
+        <div id="welcome-card" class="card">
+            <div class="card-header">
+                <h2 class="card-brand">UDAY 2026</h2>
+                <p class="card-subtitle">For Class 11th Science CBSE Board</p>
+            </div>
+            
+            <div class="card-image">
+                <img src="uday.png" alt="UDAY 2026 Class 11th" onerror="this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=250&fit=crop'">
+            </div>
+            
+            <div class="card-info">
+                <div class="student-info">
+                    <span class="info-icon">👥</span>
+                    <span>For Class 11th Science Students</span>
+                </div>
+                
+                <div class="duration-info">
+                    <span class="info-icon">📅</span>
+                    <span>Starts on 21 Apr 2025 | Ends on 31 Mar 2026</span>
+                </div>
+            </div>
+            
+            <button id="explore-btn" class="explore-button">EXPLORE</button>
+        </div>
+
+        <!-- Subject Sections (Initially Hidden) -->
+        <div id="subjects-section" class="subjects-container" style="display: none;">
+            <div class="subjects-header">
+                <button id="back-btn" class="back-button">← BACK</button>
+                <h2 class="subjects-title">Subjects</h2>
+                <p class="subjects-subtitle">Select your subjects & start learning</p>
+            </div>
+            
+            <!-- Live Classes Card -->
+            <div class="live-classes-card" id="live-classes-card">
+                <div class="live-content">
+                    <span class="live-classes-text">Join Live Class</span>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        <span class="live-text">LIVE</span>
+                    </div>
+                </div>
+                <div class="live-arrow">→</div>
+            </div>
+            
+            <div class="subjects-grid">
+                <div class="subject-card" data-subject="notices">
+                    <div class="subject-icon">📢</div>
+                    <div class="subject-info">
+                        <h3>Notices</h3>
+                        <p>9 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="physics">
+                    <div class="subject-icon">⚛️</div>
+                    <div class="subject-info">
+                        <h3>Physics</h3>
+                        <p>8 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="chemistry">
+                    <div class="subject-icon">🧪</div>
+                    <div class="subject-info">
+                        <h3>Chemistry</h3>
+                        <p>6 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="biology">
+                    <div class="subject-icon">🧬</div>
+                    <div class="subject-info">
+                        <h3>Biology</h3>
+                        <p>8 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="mathematics">
+                    <div class="subject-icon">📊</div>
+                    <div class="subject-info">
+                        <h3>Mathematics</h3>
+                        <p>8 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="english">
+                    <div class="subject-icon">📚</div>
+                    <div class="subject-info">
+                        <h3>English</h3>
+                        <p>6 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="computer-science">
+                    <div class="subject-icon">💻</div>
+                    <div class="subject-info">
+                        <h3>Computer Science</h3>
+                        <p>5 Chapters</p>
+                    </div>
+                </div>
+                
+                <div class="subject-card" data-subject="physical-education">
+                    <div class="subject-icon">🏃</div>
+                    <div class="subject-info">
+                        <h3>Physical Education</h3>
+                        <p>4 Chapters</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapters Section (Initially Hidden) -->
+        <div id="chapters-section" class="chapters-container" style="display: none;">
+            <div class="chapters-header">
+                <button id="chapters-back-btn" class="back-button">← BACK</button>
+                <h2 id="subject-title" class="chapters-title">Physics</h2>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <div class="search-icon">🔍</div>
+                    <input type="text" id="lecture-search" class="search-input" placeholder="Search lectures across all chapters..." autocomplete="off">
+                    <button id="clear-search" class="clear-search-btn" style="display: none;">×</button>
+                </div>
+            </div>
+            
+            <div id="chapters-content" class="chapters-grid">
+                <!-- Chapters will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <!-- Chapter Content Section (Initially Hidden) -->
+        <div id="chapter-content-section" class="chapter-content-container" style="display: none;">
+            <div class="chapter-content-header">
+                <button id="content-back-btn" class="back-button">← BACK</button>
+                <h2 id="chapter-content-title" class="chapter-content-title">All Contents</h2>
+            </div>
+            
+            <!-- Content Tabs -->
+            <div class="content-tabs">
+                <button class="tab-button active" data-tab="lectures">Lectures</button>
+                <button class="tab-button" data-tab="notes">Notes</button>
+                <button class="tab-button" data-tab="dpp">DPP</button>
+            </div>
+            
+            <!-- Content Grid -->
+            <div id="content-grid" class="content-grid">
+                <!-- Content will be dynamically loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <script src="script.js?v=5.0"></script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genius Hub - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4aa, #0096ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #00d4aa;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #00d4aa;
+            box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(90deg, #00d4aa, #0096ff);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 212, 170, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .status.success {
+            background: rgba(0, 212, 170, 0.2);
+            border: 1px solid #00d4aa;
+            color: #00d4aa;
+            display: block;
+        }
+        
+        .status.error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            display: block;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .instructions h2 {
+            color: #00d4aa;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .instructions code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Genius Hub Admin Panel</h1>
+            <p class="subtitle">Add new Notes and DPP entries to Google Sheets</p>
+        </header>
+        
+        <div class="form-container">
+            <form id="entryForm">
+                <div class="form-group">
+                    <label for="entryLine">Paste Entry Line (comma-separated)</label>
+                    <textarea id="entryLine" rows="3" placeholder="Subject,Chapter,Section,Title,Link" required></textarea>
+                </div>
+                
+                <button type="submit">Add Entry to Google Sheets</button>
+            </form>
+            
+            <div id="status" class="status"></div>
+        </div>
+        
+        <div class="instructions">
+            <h2>How to Use This Form</h2>
+            <ol>
+                <li>Copy and paste a comma-separated line in this format:</li>
+                <li><code>Subject,Chapter,Section,Title,Link</code></li>
+                <li>Example:</li>
+                <li><code>Biology,Cell - The Unit of Life (Botany),Notes,Cell - The Unit of Life 08 : Class Notes || Uday 2026 (Class 11th),https://static.pw.live/5eb393ee95fab7468a79d189/ADMIN/5a5a5222-b017-469e-b108-fa8d36c15c1e.pdf</code></li>
+                <li>Click "Add Entry to Google Sheets"</li>
+            </ol>
+            <p><strong>Note:</strong> This form requires Google Apps Script to be set up on your Google Sheets.</p>
+        </div>
+    </div>
+    
+    <script>
+        // IMPORTANT: REPLACE WITH YOUR ACTUAL Google Apps Script Web App URL FROM DEPLOYMENT
+        // This URL MUST match the one from your Google Apps Script deployment
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyHINishQ5dSjkDzZNii_9ChXmTnMRX-VUL3ktpoY73va9cc7qGemLwT43_47wsf_jOHQ/exec';
+        
+
+        
+        document.getElementById('entryForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get the entry line
+            const entryLine = document.getElementById('entryLine').value.trim();
+            
+            if (!entryLine) {
+                alert('Please enter an entry line');
+                return;
+            }
+            
+            // Split by comma and validate
+            const parts = entryLine.split(',');
+            
+            if (parts.length !== 5) {
+                alert('Entry must have exactly 5 comma-separated values (Subject,Chapter,Section,Title,Link)');
+                return;
+            }
+            
+            // Extract values
+            const [subject, chapter, section, title, link] = parts.map(part => part.trim());
+            
+            // Validate required fields
+            if (!subject || !chapter || !section || !title || !link) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            // Create a hidden form to submit the data
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = WEB_APP_URL;
+            form.style.display = 'none';
+            
+            // Add the data as hidden fields
+            const subjectInput = document.createElement('input');
+            subjectInput.type = 'hidden';
+            subjectInput.name = 'subject';
+            subjectInput.value = subject;
+            form.appendChild(subjectInput);
+            
+            const chapterInput = document.createElement('input');
+            chapterInput.type = 'hidden';
+            chapterInput.name = 'chapter';
+            chapterInput.value = chapter;
+            form.appendChild(chapterInput);
+            
+            const sectionInput = document.createElement('input');
+            sectionInput.type = 'hidden';
+            sectionInput.name = 'section';
+            sectionInput.value = section;
+            form.appendChild(sectionInput);
+            
+            const titleInput = document.createElement('input');
+            titleInput.type = 'hidden';
+            titleInput.name = 'title';
+            titleInput.value = title;
+            form.appendChild(titleInput);
+            
+            const linkInput = document.createElement('input');
+            linkInput.type = 'hidden';
+            linkInput.name = 'link';
+            linkInput.value = link;
+            form.appendChild(linkInput);
+            
+            // Add the form to the document and submit it
+            document.body.appendChild(form);
+            form.submit();
+            
+            // Show a message to the user
+            const statusDiv = document.getElementById('status');
+            if (statusDiv) {
+                statusDiv.className = 'status success';
+                statusDiv.textContent = 'Entry submitted! Please check the spreadsheet.';
+                statusDiv.style.display = 'block';
+            }
+            
+            // Reset the original form
+            document.getElementById('entryForm').reset();
+        });
+    </script>
+</body>
+</html>

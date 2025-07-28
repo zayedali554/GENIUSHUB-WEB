@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="icon" type="image/png" sizes="any" href="https://gknodfvnbjkifcghajsf.supabase.co/storage/v1/object/sign/logo/logo.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lMTI1ZTg2Ny04ODI1LTRmMDktOTExNS01YjYyZDZmMmNlYTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJsb2dvL2xvZ28uanBnIiwiaWF0IjoxNzUxNjk1MzQwLCJleHAiOjMzMjU2MTU5MzQwfQ.ZKq1SAE3ShgV9gZiFJTov9CV9vNBimARDqnXJwkjZW4">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <script disable-devtool-auto="true" src="https://cdn.jsdelivr.net/npm/disable-devtool" clear-log="true"
+        disable-select="true" disable-copy="true" disable-cut="true" disable-paste="false"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        #banned-users-list {
+            margin-top: 20px;
+            background: #1e1e2d;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .sub-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #e94560;
+        }
+
+        .user-item.banned {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        .unban-btn {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .password-modal {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(11, 11, 20, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .password-box {
+            background: linear-gradient(135deg, #2e1a47 0%, #1a1a2e 100%);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(74, 20, 140, 0.3);
+            border: 1px solid rgba(149, 76, 233, 0.2);
+        }
+
+        .password-box h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #e2d9ff;
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .password-input,
+        .email-input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(149, 76, 233, 0.3);
+            border-radius: 8px;
+            background-color: rgba(30, 30, 45, 0.8);
+            color: #f1eaff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus,
+        .email-input:focus {
+            outline: none;
+            border-color: #954ce9;
+            box-shadow: 0 0 0 3px rgba(149, 76, 233, 0.2);
+            background-color: rgba(40, 40, 60, 0.8);
+        }
+
+        .password-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #954ce9 0%, #6a3cb5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .password-submit:hover {
+            background: linear-gradient(to right, #8a42e0 0%, #5f34a0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .password-submit:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .admin-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .admin-sections {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: repeat(3, auto);
+                gap: 12px;
+                padding: 15px;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .admin-sections {
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: repeat(3, auto) !important;
+                gap: 10px;
+                padding: 12px;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-sections {
+                grid-template-columns: 1fr 1fr !important;
+                grid-template-rows: repeat(3, auto) !important;
+                gap: 8px;
+                padding: 10px;
+                max-width: 100%;
+            }
+        }
+
+        .admin-section-btn {
+            padding: 18px 30px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-section-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .admin-section-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            transition: all 0.4s ease;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+        }
+
+        .admin-section-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .admin-section-btn:hover::before {
+            left: 100%;
+        }
+
+        .admin-section-btn:hover::after {
+            width: 100px;
+            height: 100px;
+        }
+
+        .admin-section-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white;
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+            border-color: rgba(102, 126, 234, 0.7);
+            transform: translateY(-3px);
+        }
+
+        .admin-section-btn.active::before {
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+
+        @media (max-width: 768px) {
+            .admin-section-btn {
+                padding: 14px 20px;
+                font-size: 13px;
+                font-weight: 600;
+                letter-spacing: 0.3px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-section-btn {
+                padding: 12px 16px;
+                font-size: 11px;
+                font-weight: 600;
+                letter-spacing: 0.2px;
+                text-transform: capitalize;
+            }
+        }
+
+        .admin-section {
+            display: none;
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .chat-controls, .video-controls {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .control-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.5s;
+        }
+
+        .control-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-card:hover::before {
+            left: 100%;
+        }
+
+        .control-info {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #ffffff;
+        }
+
+        .toggle-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .toggle-btn:hover::before {
+            left: 100%;
+        }
+
+        .enable-btn {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 184, 148, 0.3);
+        }
+
+        .enable-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 184, 148, 0.4);
+        }
+
+        .disable-btn {
+            background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(225, 112, 85, 0.3);
+        }
+
+        .disable-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+            }
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+            box-shadow: 0 0 15px rgba(0, 184, 148, 0.5);
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, #e17055 0%, #d63031 100%);
+            box-shadow: 0 0 15px rgba(225, 112, 85, 0.5);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(225, 112, 85, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(225, 112, 85, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(225, 112, 85, 0);
+            }
+        }
+
+        #connection-status {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+
+        .users-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #0f3460;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #2d3748;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-name {
+            font-weight: 500;
+            margin-left: 10px;
+        }
+
+        .user-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .ban-btn {
+            padding: 5px 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .unban-btn {
+            padding: 5px 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .search-users {
+            width: 100%;
+            padding: 10px;
+            height: 40px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #0f3460;
+            color: white;
+        }
+
+        .no-users {
+            padding: 15px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .video-controls {
+            background-color: #101931;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .video-url-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #0f3460;
+            color: white;
+            font-size: 16px;
+        }
+
+        .update-video-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #45c8e9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .update-video-btn:hover {
+            background-color: #3ab4d3;
+        }
+
+        .current-video {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #0f3460;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+
+        .current-video-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #45c8e9;
+        }
+
+        .video-url {
+            color: #ccc;
+        }
+
+        .modern-warning {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            max-width: 90%;
+            width: 300px;
+            opacity: 1;
+            transition: opacity 0.3s, transform 0.3s;
+            color: #fff;
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .warning-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .warning-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .warning-message {
+            font-size: 14px;
+        }
+
+        .warning-progress {
+            height: 4px;
+            background: #e94560;
+            width: 0%;
+            border-radius: 2px;
+            margin-top: 10px;
+        }
+
+        .admin-section .users-list .sub-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.admin-section .users-list .user-item {
+    padding: 5px 0;
+}
+
+        /* ---------------- Responsive Admin Panel ---------------- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .admin-header {
+                padding: 20px;
+            }
+
+            .admin-title {
+                font-size: 2rem;
+            }
+
+            .admin-sections {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .section-btn {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .control-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .control-info {
+                margin-bottom: 10px;
+                font-size: 1rem;
+            }
+
+            .chat-controls, .video-controls {
+                padding: 20px;
+            }
+
+            .users-list {
+                max-height: 200px;
+            }
+
+            .video-url-input,
+            .password-input,
+            .email-input {
+                font-size: 14px;
+                padding: 12px;
+            }
+
+            .password-submit,
+            .update-video-btn,
+            .toggle-btn {
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+        }
+
+        /* Input Field Styles */
+        .video-url-input, .password-input, .email-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .video-url-input:focus, .password-input:focus, .email-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .video-url-input::placeholder, .password-input::placeholder, .email-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .update-video-btn, .password-submit {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .update-video-btn::before, .password-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .update-video-btn:hover, .password-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .update-video-btn:hover::before, .password-submit:hover::before {
+            left: 100%;
+        }
+
+        /* User Lists */
+        .users-list {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .users-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .users-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .users-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+        }
+
+        .user-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .user-item.banned {
+            border-color: rgba(225, 112, 85, 0.3);
+            background: rgba(225, 112, 85, 0.1);
+        }
+
+        /* Inputs */
+        .video-url-input,
+        .password-input,
+        .email-input,
+        .search-users {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: box-shadow 0.3s;
+        }
+
+        .video-url-input:focus,
+        .password-input:focus,
+        .email-input:focus,
+        .search-users:focus {
+            box-shadow: 0 0 8px var(--primary);
+            outline: none;
+        }
+
+        /* ---------------- Glass Admin UI Enhancements ---------------- */
+        @supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+            .video-controls,
+            .chat-controls {
+                background: rgba(16,25,49,0.6);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+                border: 1px solid rgba(255,255,255,0.08);
+            }
+
+            .password-box {
+                background: rgba(22,33,62,0.85);
+                -webkit-backdrop-filter: blur(15px);
+                backdrop-filter: blur(15px);
+                border: 1px solid rgba(255,255,255,0.08);
+            }
+        }
+
+        .toggle-btn.enable-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .toggle-btn.disable-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .update-video-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+        }
+
+        .update-video-btn:hover {
+            box-shadow: 0 0 10px var(--primary);
+        }
+        
+        .blocked-word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #2d3748;
+        }
+        
+        .delete-word-btn {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Online Users Count Styling */
+        .online-users-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(149, 76, 233, 0.2);
+        }
+
+        .online-users-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #45c8e9;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Modern Online Users Card */
+        .online-users-container {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            max-width: 400px;
+        }
+
+        .online-users-container:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .online-users-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white !important;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .online-users-icon i {
+            color: white !important;
+            font-size: 24px;
+            z-index: 2;
+        }
+
+        .online-users-content {
+            flex: 1;
+        }
+
+        .online-users-count {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+
+        .online-users-label {
+            font-size: 16px;
+            color: #a6b0c3;
+            margin: 0;
+        }
+
+        /* Hide old header */
+        .online-users-header {
+            display: none;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+</head>
+
+<body>
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="password-modal">
+        <div class="password-box">
+            <h2>Admin Login</h2>
+            <input type="email" id="email-input" class="email-input" placeholder="Enter admin email">
+            <input type="password" id="password-input" class="password-input" placeholder="Enter admin password">
+            <button id="auth-submit" class="password-submit">Log In</button>
+        </div>
+    </div>
+
+    <!-- Ban Reason Modal -->
+    <div id="ban-reason-modal" class="password-modal" style="display: none;">
+        <div class="password-box">
+            <h2>Ban User</h2>
+            <p id="ban-user-info" style="margin-bottom: 15px; color: #e2d9ff;"></p>
+            <textarea id="ban-reason-input" class="password-input" placeholder="Enter ban reason (required)" required style="min-height: 80px; resize: vertical;"></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button id="ban-confirm" class="password-submit" style="flex: 1;">Ban User</button>
+                <button id="ban-cancel" class="password-submit" style="flex: 1; background: #6c757d;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel (hidden until authenticated) -->
+    <div id="admin-panel" style="display: none;">
+        <div class="container">
+            <div class="admin-header">
+                <h1 class="admin-title">Admin Panel</h1>
+                <div id="connection-status">
+                    <span class="status-indicator status-active"></span>
+                    <span>Connected</span>
+                </div>
+            </div>
+
+            <div class="admin-sections">
+                <button id="chat-section-btn" class="admin-section-btn active">Chat Controls</button>
+                <button id="video-section-btn" class="admin-section-btn">Video Controls</button>
+                <button id="pinned-section-btn" class="admin-section-btn">Pinned Message</button>
+                 <button id="poll-section-btn" class="admin-section-btn">Poll Controls</button>
+                <button id="analytics-section-btn" class="admin-section-btn">Analytics</button>
+                <button id="blocked-words-section-btn" class="admin-section-btn">Blocked Words</button>
+            </div>
+
+            <!-- Chat Controls Section -->
+            <div id="chat-section" class="admin-section active">
+                <div class="chat-controls">
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span class="status-indicator status-active" id="chat-status-indicator"></span>
+                            <span id="chat-status-text">Chat is currently enabled</span>
+                        </div>
+                        <button id="toggle-chat-btn" class="toggle-btn disable-btn">Disable Chat</button>
+                    </div>
+
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span>Clear all messages</span>
+                        </div>
+                        <button id="clear-messages-btn" class="toggle-btn">Clear Messages</button>
+                    </div>
+
+                    <!-- User Banning Section -->
+                    <input type="text" id="search-users" class="search-users" placeholder="Search users...">
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span>Banned Users List</span>
+                        </div>
+                    </div>
+                    <div id="banned-users-list"></div>
+                    <div class="users-list" id="users-list">
+                        <div class="no-users">Loading users...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pinned Message Section -->
+            <div id="pinned-section" class="admin-section">
+                <div class="video-controls">
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span>Manage Pinned Message</span>
+                        </div>
+                    </div>
+                    <input type="text" id="pinned-message-input" class="video-url-input" placeholder="Enter message to pin...">
+                    <button id="update-pinned-btn" class="update-video-btn">Pin Message</button>
+                    <div class="current-video" style="margin-top: 20px;">
+                        <div class="current-video-label">Current Pinned Message:</div>
+                        <div class="video-url" id="current-pinned-message">Loading...</div>
+                        <button id="delete-pinned-btn" class="toggle-btn" style="margin-top: 10px; background-color: #e74c3c; display: none;">Delete Pin</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Poll Controls Section -->
+            <div id="poll-section" class="admin-section">
+                <div class="video-controls">
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span>Create a New Poll</span>
+                        </div>
+                    </div>
+                    <input type="text" id="poll-question-input" class="video-url-input" placeholder="Enter poll question">
+                    <input type="text" id="poll-option1-input" class="video-url-input" placeholder="Option 1">
+                    <input type="text" id="poll-option2-input" class="video-url-input" placeholder="Option 2">
+                    <input type="text" id="poll-option3-input" class="video-url-input" placeholder="Option 3 (optional)">
+                    <input type="text" id="poll-option4-input" class="video-url-input" placeholder="Option 4 (optional)">
+                    <button id="create-poll-btn" class="update-video-btn">Create Poll</button>
+                    <div class="current-video" style="margin-top: 20px;">
+                        <div class="current-video-label">Current Active Poll:</div>
+                        <div class="video-url" id="current-poll-display">None</div>
+                        <button id="end-poll-btn" class="toggle-btn" style="margin-top: 10px; background-color: #e74c3c; display: none;">End Poll</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Controls Section -->
+            <div id="video-section" class="admin-section">
+                <div class="video-controls">
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span class="status-indicator status-active" id="video-live-status-indicator"></span>
+                            <span id="video-live-status-text">Video is Live</span>
+                        </div>
+                        <button id="toggle-video-live-btn" class="toggle-btn disable-btn">Stop Video</button>
+                    </div>
+                    
+                    <div class="control-card">
+                        <div class="control-info">
+                            <span>Update Video Source</span>
+                        </div>
+                    </div>
+                    
+                    <input type="text" id="video-url-input" class="video-url-input" placeholder="Enter new video URL (HLS .m3u8)">
+                    <button id="update-video-btn" class="update-video-btn">Update Video Source</button>
+                    
+                    <div class="current-video">
+                        <div class="current-video-label">Current Video Source:</div>
+                        <div class="video-url" id="current-video-url">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="analytics-section" class="admin-section">
+                <div class="video-controls">
+                    <div id="live-stats" class="online-users-container">
+                        <div class="online-users-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="online-users-content">
+                            <div class="online-users-count" id="live-online-users">0</div>
+                            <div class="online-users-label">Online Users</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blocked Words Section -->
+            <div id="blocked-words-section" class="admin-section">
+                <div class="chat-controls">
+                    <div class="control-card" style="margin-bottom: 20px;">
+                        <div class="control-info">
+                            <span>Manage Blocked Words</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-card" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+                        <input type="text" id="new-blocked-word" class="video-url-input" placeholder="Enter word to block" style="flex-grow: 1; margin: 0;">
+                        <button id="add-blocked-word-btn" class="toggle-btn enable-btn" style="margin: 0; flex-shrink: 0;">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                    
+                    <div class="sub-header">
+                        <i class="fas fa-ban"></i> Blocked Words List
+                    </div>
+                    <div class="users-list" id="blocked-words-list" style="margin-top: 10px;">
+                        <div class="no-users">Loading blocked words...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    
+    const supabase = window.supabaseClient;
+    document.addEventListener('DOMContentLoaded', () => {
+        // Initialize Supabase client
+        
+
+        // Authentication check
+        document.getElementById('auth-submit').addEventListener('click', async () => {
+            const email = document.getElementById('email-input').value.trim();
+            const password = document.getElementById('password-input').value;
+            if (!email || !password) {
+                showModernWarning('⚠️ Invalid Input', 'Please enter both email and password.', '#e74c3c');
+                return;
+            }
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) {
+                    showModernWarning('⚠️ Login Failed', error.message, '#e74c3c');
+                    return;
+                }
+                if (data.user) {
+                    document.getElementById('auth-modal').style.display = 'none';
+                    document.getElementById('admin-panel').style.display = 'block';
+                    initAdminPanel();
+                }
+            } catch (err) {
+                showModernWarning('⚠️ Error', 'An unexpected error occurred. Please try again.', '#e74c3c');
+            }
+        });
+
+        document.getElementById('password-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('auth-submit').click();
+        });
+
+        // Section navigation
+        document.getElementById('chat-section-btn').addEventListener('click', () => {
+            document.getElementById('chat-section-btn').classList.add('active');
+            document.getElementById('video-section-btn').classList.remove('active');
+            document.getElementById('pinned-section-btn').classList.remove('active');
+            document.getElementById('analytics-section-btn').classList.remove('active');
+            document.getElementById('poll-section-btn').classList.remove('active');
+            document.getElementById('blocked-words-section-btn').classList.remove('active');
+            document.getElementById('chat-section').classList.add('active');
+            document.getElementById('video-section').classList.remove('active');
+            document.getElementById('pinned-section').classList.remove('active');
+            document.getElementById('analytics-section').classList.remove('active');
+            document.getElementById('poll-section').classList.remove('active');
+            document.getElementById('blocked-words-section').classList.remove('active');
+        });
+
+        document.getElementById('video-section-btn').addEventListener('click', () => {
+            document.getElementById('video-section-btn').classList.add('active');
+            document.getElementById('chat-section-btn').classList.remove('active');
+            document.getElementById('pinned-section-btn').classList.remove('active');
+            document.getElementById('analytics-section-btn').classList.remove('active');
+            document.getElementById('poll-section-btn').classList.remove('active');
+            document.getElementById('blocked-words-section-btn').classList.remove('active');
+            document.getElementById('video-section').classList.add('active');
+            document.getElementById('chat-section').classList.remove('active');
+            document.getElementById('pinned-section').classList.remove('active');
+            document.getElementById('analytics-section').classList.remove('active');
+            document.getElementById('poll-section').classList.remove('active');
+            document.getElementById('blocked-words-section').classList.remove('active');
+        });
+
+        document.getElementById('pinned-section-btn').addEventListener('click', () => {
+            document.getElementById('pinned-section-btn').classList.add('active');
+            document.getElementById('chat-section-btn').classList.remove('active');
+            document.getElementById('video-section-btn').classList.remove('active');
+            document.getElementById('analytics-section-btn').classList.remove('active');
+            document.getElementById('poll-section-btn').classList.remove('active');
+            document.getElementById('blocked-words-section-btn').classList.remove('active');
+            document.getElementById('pinned-section').classList.add('active');
+            document.getElementById('chat-section').classList.remove('active');
+            document.getElementById('video-section').classList.remove('active');
+            document.getElementById('analytics-section').classList.remove('active');
+            document.getElementById('poll-section').classList.remove('active');
+            document.getElementById('blocked-words-section').classList.remove('active');
+        });
+
+        document.getElementById('analytics-section-btn').addEventListener('click', () => {
+            document.getElementById('analytics-section-btn').classList.add('active');
+            document.getElementById('chat-section-btn').classList.remove('active');
+            document.getElementById('video-section-btn').classList.remove('active');
+            document.getElementById('pinned-section-btn').classList.remove('active');
+            document.getElementById('poll-section-btn').classList.remove('active');
+            document.getElementById('blocked-words-section-btn').classList.remove('active');
+            document.getElementById('analytics-section').classList.add('active');
+            document.getElementById('chat-section').classList.remove('active');
+            document.getElementById('video-section').classList.remove('active');
+            document.getElementById('pinned-section').classList.remove('active');
+            document.getElementById('poll-section').classList.remove('active');
+            document.getElementById('blocked-words-section').classList.remove('active');
+        });
+
+        document.getElementById('poll-section-btn').addEventListener('click', () => {
+            document.getElementById('poll-section-btn').classList.add('active');
+            document.getElementById('chat-section-btn').classList.remove('active');
+            document.getElementById('video-section-btn').classList.remove('active');
+            document.getElementById('pinned-section-btn').classList.remove('active');
+            document.getElementById('analytics-section-btn').classList.remove('active');
+            document.getElementById('blocked-words-section-btn').classList.remove('active');
+            document.getElementById('poll-section').classList.add('active');
+            document.getElementById('chat-section').classList.remove('active');
+            document.getElementById('video-section').classList.remove('active');
+            document.getElementById('pinned-section').classList.remove('active');
+            document.getElementById('analytics-section').classList.remove('active');
+            document.getElementById('blocked-words-section').classList.remove('active');
+        });
+
+        document.getElementById('blocked-words-section-btn').addEventListener('click', () => {
+            document.getElementById('blocked-words-section-btn').classList.add('active');
+            document.getElementById('chat-section-btn').classList.remove('active');
+            document.getElementById('video-section-btn').classList.remove('active');
+            document.getElementById('pinned-section-btn').classList.remove('active');
+            document.getElementById('analytics-section-btn').classList.remove('active');
+            document.getElementById('poll-section-btn').classList.remove('active');
+            document.getElementById('blocked-words-section').classList.add('active');
+            document.getElementById('chat-section').classList.remove('active');
+            document.getElementById('video-section').classList.remove('active');
+            document.getElementById('pinned-section').classList.remove('active');
+            document.getElementById('analytics-section').classList.remove('active');
+            document.getElementById('poll-section').classList.remove('active');
+        });
+
+        async function initAdminPanel() {
+            // DOM elements
+            const toggleChatBtn = document.getElementById('toggle-chat-btn');
+            const chatStatusIndicator = document.getElementById('chat-status-indicator');
+            const chatStatusText = document.getElementById('chat-status-text');
+            const clearMessagesBtn = document.getElementById('clear-messages-btn');
+            const videoUrlInput = document.getElementById('video-url-input');
+            const updateVideoBtn = document.getElementById('update-video-btn');
+            const currentVideoUrl = document.getElementById('current-video-url');
+            const searchUsers = document.getElementById('search-users');
+            const usersList = document.getElementById('users-list');
+            const bannedUsersList = document.getElementById('banned-users-list');
+            const liveOnlineUsers = document.getElementById('live-online-users');
+            const liveMessagesPerMinute = document.getElementById('live-messages-per-minute');
+            const livePeakActivity = document.getElementById('live-peak-activity');
+            const pinnedMessageInput = document.getElementById('pinned-message-input');
+            const updatePinnedBtn = document.getElementById('update-pinned-btn');
+            const currentPinnedMessage = document.getElementById('current-pinned-message');
+            const deletePinnedBtn = document.getElementById('delete-pinned-btn');
+            const pollQuestionInput = document.getElementById('poll-question-input');
+            const pollOption1Input = document.getElementById('poll-option1-input');
+            const pollOption2Input = document.getElementById('poll-option2-input');
+            const pollOption3Input = document.getElementById('poll-option3-input');
+            const pollOption4Input = document.getElementById('poll-option4-input');
+            const createPollBtn = document.getElementById('create-poll-btn');
+            const currentPollDisplay = document.getElementById('current-poll-display');
+            const endPollBtn = document.getElementById('end-poll-btn');
+            let currentPollId = null;
+            
+            // Video Live Toggle Elements
+            const toggleVideoLiveBtn = document.getElementById('toggle-video-live-btn');
+            const videoLiveStatusIndicator = document.getElementById('video-live-status-indicator');
+            const videoLiveStatusText = document.getElementById('video-live-status-text');
+
+            // Load initial chat status
+            const { data: chatStatusData, error: chatError } = await supabase
+                .from('admin')
+                .select('enabled')
+                .eq('id', 'chatStatus')
+                .single();
+            if (chatError) {
+                showModernWarning('⚠️ Error', 'Failed to load chat status.', '#e74c3c');
+            } else {
+                updateChatStatusUI(chatStatusData?.enabled ?? true);
+            }
+
+            // Video Live Toggle Functions
+            function updateVideoLiveUI(isLive) {
+                if (isLive) {
+                    videoLiveStatusIndicator.className = 'status-indicator status-active';
+                    videoLiveStatusText.textContent = 'Video is Live';
+                    toggleVideoLiveBtn.textContent = 'Stop Video';
+                    toggleVideoLiveBtn.className = 'toggle-btn disable-btn';
+                } else {
+                    videoLiveStatusIndicator.className = 'status-indicator status-disabled';
+                    videoLiveStatusText.textContent = 'Video is Stopped';
+                    toggleVideoLiveBtn.textContent = 'Start Video';
+                    toggleVideoLiveBtn.className = 'toggle-btn enable-btn';
+                }
+            }
+
+            // Load initial video live status
+            const { data: videoLiveData, error: videoLiveError } = await supabase
+                .from('admin')
+                .select('enabled')
+                .eq('id', 'videoLive')
+                .single();
+            if (videoLiveError && videoLiveError.code !== 'PGRST116') {
+                showModernWarning('⚠️ Error', 'Could not load video live status.', '#e74c3c');
+            }
+            updateVideoLiveUI(videoLiveData?.enabled ?? true);
+
+            // Load current video source
+            const { data: videoData, error: videoError } = await supabase
+                .from('admin')
+                .select('url')
+                .eq('id', 'videoSource')
+                .single();
+            const currentUrl = videoData?.url || 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+            if (videoError) {
+                showModernWarning('⚠️ Error', 'Failed to load video source.', '#e74c3c');
+            } else {
+                videoUrlInput.value = currentUrl;
+                currentVideoUrl.textContent = currentUrl;
+            }
+
+            // Pinned Message Logic
+            function updatePinnedMessageUI(message) {
+                if (message && message.url) {
+                    currentPinnedMessage.textContent = message.url;
+                    pinnedMessageInput.value = message.url;
+                    deletePinnedBtn.style.display = 'inline-block';
+                } else {
+                    currentPinnedMessage.textContent = 'None';
+                    pinnedMessageInput.value = '';
+                    deletePinnedBtn.style.display = 'none';
+                }
+            }
+
+            const { data: pinnedData, error: pinnedError } = await supabase
+                .from('admin')
+                .select('url')
+                .eq('id', 'pinnedMessage')
+                .single();
+            if (pinnedError && pinnedError.code !== 'PGRST116') { // Ignore no rows found error
+                showModernWarning('⚠️ Error', 'Failed to load pinned message.', '#e74c3c');
+            } else {
+                updatePinnedMessageUI(pinnedData);
+            }
+
+            updatePinnedBtn.addEventListener('click', async () => {
+                const newMessage = pinnedMessageInput.value.trim();
+                if (!newMessage) {
+                    showModernWarning('⚠️ Invalid Input', 'Pinned message cannot be empty.', '#e74c3c');
+                    return;
+                }
+                const { error } = await supabase
+                    .from('admin')
+                    .upsert({ id: 'pinnedMessage', url: newMessage });
+                if (error) {
+                    showModernWarning('⚠️ Error', 'Failed to pin message: ' + error.message, '#e74c3c');
+                } else {
+                    showModernWarning('✅ Success', 'Message pinned successfully.', '#2ecc71');
+                }
+            });
+
+            deletePinnedBtn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete the pinned message?')) {
+                    const { error } = await supabase
+                        .from('admin')
+                        .delete()
+                        .eq('id', 'pinnedMessage');
+                    if (error) {
+                        showModernWarning('⚠️ Error', 'Failed to delete pinned message: ' + error.message, '#e74c3c');
+                    } else {
+                        showModernWarning('✅ Success', 'Pinned message deleted.', '#2ecc71');
+                        updatePinnedMessageUI(null); // Clear UI immediately
+                    }
+                }
+            });
+
+            /* ------------------------------ Poll Controls ------------------------------ */
+
+            function updateCurrentPollUI(poll) {
+                if (poll) {
+                    currentPollId = poll.id;
+                    currentPollDisplay.textContent = poll.question;
+                    endPollBtn.style.display = 'inline-block';
+                } else {
+                    currentPollId = null;
+                    currentPollDisplay.textContent = 'None';
+                    endPollBtn.style.display = 'none';
+                }
+            }
+
+            async function loadCurrentPoll() {
+                const { data: pollData, error: pollError } = await supabase
+                    .from('polls')
+                    .select('*')
+                    .eq('active', true)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (pollError && pollError.code !== 'PGRST116') {
+                    console.error('Failed to load current poll:', pollError.message);
+                    return;
+                }
+                updateCurrentPollUI(pollData);
+            }
+
+            // Initial poll load
+            loadCurrentPoll();
+
+            // Real-time poll updates
+            supabase
+                .channel('poll_updates')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'polls' },
+                    () => loadCurrentPoll()
+                )
+                .subscribe();
+
+            createPollBtn.addEventListener('click', async () => {
+                const question = pollQuestionInput.value.trim();
+                const option1 = pollOption1Input.value.trim();
+                const option2 = pollOption2Input.value.trim();
+                const option3 = pollOption3Input.value.trim();
+                const option4 = pollOption4Input.value.trim();
+
+                if (!question || !option1 || !option2) {
+                    showModernWarning('⚠️ Invalid Input', 'Please enter a question and at least two options.', '#e74c3c');
+                    return;
+                }
+
+                // Deactivate any existing active polls
+                await supabase
+                    .from('polls')
+                    .update({ active: false })
+                    .eq('active', true);
+
+                const { error: pollCreateError } = await supabase.from('polls').insert([
+                    {
+                        question,
+                        option1,
+                        option2,
+                        option3: option3 || null,
+                        option4: option4 || null,
+                        active: true,
+                        created_at: new Date().toISOString(),
+                    },
+                ]);
+
+                if (pollCreateError) {
+                    showModernWarning('⚠️ Error', 'Failed to create poll: ' + pollCreateError.message, '#e74c3c');
+                } else {
+                    showModernWarning('✅ Success', 'Poll created successfully.', '#2ecc71');
+                }
+            });
+
+            endPollBtn.addEventListener('click', async () => {
+                if (!currentPollId) return;
+                if (confirm('Are you sure you want to end and delete the current poll?')) {
+                    const { error: delError } = await supabase
+                        .from('polls')
+                        .delete()
+                        .eq('id', currentPollId);
+                    if (delError) {
+                        showModernWarning('⚠️ Error', 'Failed to delete poll: ' + delError.message, '#e74c3c');
+                    } else {
+                        showModernWarning('✅ Poll Deleted', 'Poll and its votes removed.', '#2ecc71');
+                    }
+                }
+            });
+
+            // Load live stats
+            async function loadLiveStats() {
+                const cutoff = new Date(Date.now() - 60000).toISOString();
+                const { data: onlineUsers, error: onlineError } = await supabase
+                    .from('online')
+                    .select('id')
+                    .gt('last_active', cutoff);
+                const { data: messages, error: messagesError } = await supabase
+                    .from('messages')
+                    .select('id')
+                    .gt('timestamp', cutoff);
+                const { data: peakActivity, error: peakError } = await supabase
+                    .from('messages')
+                    .select('timestamp')
+                    .order('timestamp', { ascending: false })
+                    .limit(1);
+                if (onlineError || messagesError || peakError) {
+                    showModernWarning('⚠️ Error', 'Failed to load live stats.', '#e74c3c');
+                    return;
+                }
+                liveOnlineUsers.textContent = onlineUsers.length;
+                liveMessagesPerMinute.textContent = messages.length;
+                livePeakActivity.textContent = peakActivity[0]?.timestamp ? new Date(peakActivity[0].timestamp).toLocaleString() : 'None';
+            }
+
+            // Initial load for live stats
+            loadLiveStats();
+
+            // Real-time live stats updates
+            supabase
+                .channel('live_stats')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'online' },
+                    () => loadLiveStats()
+                )
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'messages' },
+                    () => loadLiveStats()
+                )
+                .subscribe();
+
+            // Real-time chat status updates
+            supabase
+                .channel('chat_status')
+                .on(
+                    'postgres_changes',
+                    { event: 'UPDATE', schema: 'public', table: 'admin', filter: 'id=eq.chatStatus' },
+                    (payload) => {
+                        updateChatStatusUI(payload.new.enabled);
+                    }
+                )
+                .subscribe();
+
+            // Real-time video live status updates
+            supabase
+                .channel('video_live_status')
+                .on(
+                    'postgres_changes',
+                    { event: 'UPDATE', schema: 'public', table: 'admin', filter: 'id=eq.videoLive' },
+                    (payload) => {
+                        updateVideoLiveUI(payload.new.enabled);
+                    }
+                )
+                .subscribe();
+
+            supabase
+                .channel('pinned_message_updates')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'admin', filter: 'id=eq.pinnedMessage' },
+                    (payload) => {
+                        if (payload.eventType === 'DELETE') {
+                            updatePinnedMessageUI(null);
+                        } else {
+                            updatePinnedMessageUI(payload.new);
+                        }
+                    }
+                )
+                .subscribe();
+
+            // Toggle chat button
+            toggleChatBtn.addEventListener('click', async () => {
+                const { data: currentStatus, error } = await supabase
+                    .from('admin')
+                    .select('enabled')
+                    .eq('id', 'chatStatus')
+                    .single();
+                if (error) {
+                    showModernWarning('⚠️ Error', 'Failed to fetch chat status.', '#e74c3c');
+                    return;
+                }
+                const newStatus = !currentStatus?.enabled;
+                const { error: updateError } = await supabase
+                    .from('admin')
+                    .upsert({ id: 'chatStatus', enabled: newStatus });
+                if (updateError) {
+                    showModernWarning('⚠️ Error', 'Failed to update chat status.', '#e74c3c');
+                    return;
+                }
+                // Immediately reflect the change in the UI
+                updateChatStatusUI(newStatus);
+                showModernWarning(
+                    '✅ Chat Status Updated',
+                    `Chat is now ${newStatus ? 'enabled' : 'disabled'}.`,
+                    '#2ecc71'
+                );
+            });
+
+            // Toggle video live button
+            toggleVideoLiveBtn.addEventListener('click', async () => {
+                const { data: currentStatus, error } = await supabase
+                    .from('admin')
+                    .select('enabled')
+                    .eq('id', 'videoLive')
+                    .single();
+                if (error) {
+                    showModernWarning('⚠️ Error', 'Failed to fetch video live status.', '#e74c3c');
+                    return;
+                }
+                const newStatus = !currentStatus?.enabled;
+                const { error: updateError } = await supabase
+                    .from('admin')
+                    .upsert({ id: 'videoLive', enabled: newStatus });
+                if (updateError) {
+                    showModernWarning('⚠️ Error', 'Failed to update video live status.', '#e74c3c');
+                    return;
+                }
+                // Immediately reflect the change in the UI
+                updateVideoLiveUI(newStatus);
+                showModernWarning(
+                    '✅ Video Status Updated',
+                    `Video is now ${newStatus ? 'Live' : 'Stopped'}.`,
+                    '#2ecc71'
+                );
+            });
+
+            // Clear messages button
+            clearMessagesBtn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to clear ALL chat messages? This may take time for large chat histories.')) {
+                    const { data, error } = await supabase.rpc('clear_all_messages');
+                    if (error) {
+                        showModernWarning('⚠️ Error', 'Failed to clear messages: ' + error.message, '#e74c3c');
+                    } else {
+                        showModernWarning('✅ Messages Cleared', 'All messages have been cleared.', '#2ecc71');
+                    }
+                }
+            });
+
+            // Update video source button
+            updateVideoBtn.addEventListener('click', async () => {
+                const newUrl = videoUrlInput.value.trim();
+                if (!newUrl) {
+                    showModernWarning('⚠️ Invalid URL', 'Please enter a video URL.', '#e74c3c');
+                    return;
+                }
+                if (!newUrl.endsWith('.m3u8') && !newUrl.includes('m3u8')) {
+                    showModernWarning('⚠️ Invalid URL', 'Please enter a valid HLS (.m3u8) stream URL.', '#e74c3c');
+                    return;
+                }
+                const { error } = await supabase
+                    .from('admin')
+                    .upsert({ id: 'videoSource', url: newUrl });
+                if (error) {
+                    showModernWarning('⚠️ Error', 'Failed to update video source.', '#e74c3c');
+                    return;
+                }
+                currentVideoUrl.textContent = newUrl;
+                showModernWarning('✅ Video Source Updated', 'Video source updated successfully!', '#2ecc71');
+            });
+
+            // Load online and banned users
+            async function loadUsers(searchTerm = '') {
+                // Online users
+                const cutoff = new Date(Date.now() - 30000).toISOString();
+                const { data: onlineUsers, error: onlineError } = await supabase
+                    .from('online')
+                    .select('id, username, color')
+                    .gt('last_active', cutoff)
+                    .ilike('username', `%${searchTerm}%`)
+                    .limit(50);
+                if (onlineError) {
+                    showModernWarning('⚠️ Error', 'Failed to load online users.', '#e74c3c');
+                    return;
+                }
+
+                // Banned users
+                const { data: bannedUsers, error: bannedError } = await supabase
+                    .from('banned_users')
+                    .select('id, username')
+                    .ilike('username', `%${searchTerm}%`);
+                if (bannedError) {
+                    showModernWarning('⚠️ Error', 'Failed to load banned users.', '#e74c3c');
+                    return;
+                }
+
+                // Update online users list
+                usersList.innerHTML = '';
+                if (onlineUsers.length === 0) {
+                    usersList.innerHTML = '<div class="no-users">No users online</div>';
+                } else {
+                    onlineUsers.forEach(user => {
+                        const isBanned = bannedUsers.some(banned => banned.id === user.id);
+                        const userItem = document.createElement('div');
+                        userItem.className = 'user-item';
+                        userItem.innerHTML = `
+                            <div class="user-info">
+                                <span class="user-color" style="background-color: ${user.color}"></span>
+                                <span class="user-name">${user.username}</span>
+                            </div>
+                            <button class="${isBanned ? 'unban-btn' : 'ban-btn'}" data-userid="${user.id}" data-username="${user.username}">
+                                ${isBanned ? 'Unban' : 'Ban'}
+                            </button>
+                        `;
+                        usersList.appendChild(userItem);
+                    });
+                }
+
+                // Update banned users list
+                bannedUsersList.innerHTML = '<div class="sub-header">Banned Users</div>';
+                if (bannedUsers.length === 0) {
+                    bannedUsersList.innerHTML += '<div class="no-users">No banned users</div>';
+                } else {
+                    bannedUsers.forEach(user => {
+                        const userItem = document.createElement('div');
+                        userItem.className = 'user-item banned';
+                        userItem.innerHTML = `
+                            <span>${user.username}</span>
+                            <button class="unban-btn" data-userid="${user.id}">
+                                Unban
+                            </button>
+                        `;
+                        bannedUsersList.appendChild(userItem);
+                    });
+                }
+
+                // Add ban/unban event listeners
+                document.querySelectorAll('.ban-btn, .unban-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const userId = e.target.getAttribute('data-userid');
+                        const username = e.target.getAttribute('data-username');
+                        if (e.target.classList.contains('ban-btn')) {
+                            // Show ban reason modal
+                            const banModal = document.getElementById('ban-reason-modal');
+                            const banUserInfo = document.getElementById('ban-user-info');
+                            const banReasonInput = document.getElementById('ban-reason-input');
+                            const banConfirm = document.getElementById('ban-confirm');
+                            const banCancel = document.getElementById('ban-cancel');
+                            
+                            banUserInfo.textContent = `You are about to ban: ${username}`;
+                            banReasonInput.value = '';
+                            banModal.style.display = 'flex';
+                            banReasonInput.focus();
+                            
+                            // Handle ban confirmation
+                            const handleBanConfirm = async () => {
+                                const reason = banReasonInput.value.trim();
+                                if (!reason) {
+                                    showModernWarning('⚠️ Error', 'Ban reason is required', '#e74c3c');
+                                    return;
+                                }
+                                
+                                const { error } = await supabase
+                                    .from('banned_users')
+                                    .upsert({ 
+                                        id: userId, 
+                                        username, 
+                                        reason: reason,
+                                        timestamp: new Date().toISOString() 
+                                    });
+                                    
+                                if (error) {
+                                    showModernWarning('⚠️ Error', 'Failed to ban user: ' + error.message, '#e74c3c');
+                                    return;
+                                }
+                                
+                                showModernWarning('✅ User Banned', `${username} has been banned.`, '#2ecc71');
+                                banModal.style.display = 'none';
+                                loadUsers(searchTerm);
+                                
+                                // Remove event listeners
+                                banConfirm.removeEventListener('click', handleBanConfirm);
+                                banCancel.removeEventListener('click', handleBanCancel);
+                            };
+                            
+                            // Handle ban cancellation
+                            const handleBanCancel = () => {
+                                banModal.style.display = 'none';
+                                banConfirm.removeEventListener('click', handleBanConfirm);
+                                banCancel.removeEventListener('click', handleBanCancel);
+                            };
+                            
+                            banConfirm.addEventListener('click', handleBanConfirm);
+                            banCancel.addEventListener('click', handleBanCancel);
+                            
+                            // Handle Enter key in textarea
+                            banReasonInput.addEventListener('keydown', (event) => {
+                                if (event.key === 'Enter' && !event.shiftKey) {
+                                    event.preventDefault();
+                                    handleBanConfirm();
+                                }
+                            });
+                            
+                        } else {
+                            const { error } = await supabase.from('banned_users').delete().eq('id', userId);
+                            if (error) {
+                                showModernWarning('⚠️ Error', 'Failed to unban user: ' + error.message, '#e74c3c');
+                                return;
+                            }
+                            showModernWarning('✅ User Unbanned', `${username} has been unbanned.`, '#2ecc71');
+                            loadUsers(searchTerm);
+                        }
+                    });
+                });
+            }
+
+            // Initial load
+            loadUsers();
+
+            // Real-time online users updates
+            supabase
+                .channel('online_users')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'online' },
+                    () => loadUsers(searchUsers.value)
+                )
+                .subscribe();
+
+            // Real-time banned users updates
+            supabase
+                .channel('banned_users')
+                .on(
+                    'postgres_changes',
+                    { event: '*', schema: 'public', table: 'banned_users' },
+                    () => loadUsers(searchUsers.value)
+                )
+                .subscribe();
+
+            // Search users
+            searchUsers.addEventListener('input', (e) => {
+                loadUsers(e.target.value.toLowerCase());
+            });
+
+            // Blocked words management
+            const blockedWordsList = document.getElementById('blocked-words-list');
+            const addWordBtn = document.getElementById('add-blocked-word-btn');
+            const newWordInput = document.getElementById('new-blocked-word');
+
+            // Load blocked words
+            async function loadBlockedWords() {
+                const { data, error } = await supabase
+                    .from('blocked_words')
+                    .select('*')
+                    .order('word', { ascending: true });
+
+                if (error) {
+                    showModernWarning('⚠️ Error', 'Failed to load blocked words', '#FF4444');
+                    return;
+                }
+
+                if (data.length === 0) {
+                    blockedWordsList.innerHTML = '<div class="no-users">No blocked words found</div>';
+                    return;
+                }
+
+                blockedWordsList.innerHTML = '';
+                data.forEach(word => {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'blocked-word-item';
+                    wordItem.innerHTML = `
+                        <span>${word.word}</span>
+                        <button class="delete-word-btn" data-id="${word.id}">Delete</button>
+                    `;
+                    blockedWordsList.appendChild(wordItem);
+                });
+
+                // Add delete event listeners
+                document.querySelectorAll('.delete-word-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const id = e.target.getAttribute('data-id');
+                        const { error } = await supabase
+                            .from('blocked_words')
+                            .delete()
+                            .eq('id', id);
+
+                        if (error) {
+                            showModernWarning('⚠️ Error', 'Failed to delete word', '#FF4444');
+                        } else {
+                            showModernWarning('✅ Success', 'Word deleted successfully', '#2ecc71');
+                            loadBlockedWords();
+                        }
+                    });
+                });
+            }
+
+            // Add new blocked word
+            addWordBtn.addEventListener('click', async () => {
+                const word = newWordInput.value.trim();
+                if (!word) return;
+
+                const { error } = await supabase
+                    .from('blocked_words')
+                    .insert([{ word }]);
+
+                if (error) {
+                    showModernWarning('⚠️ Error', 'Failed to add word', '#FF4444');
+                } else {
+                    showModernWarning('✅ Success', 'Word added successfully', '#2ecc71');
+                    newWordInput.value = '';
+                    loadBlockedWords();
+                }
+            });
+
+            // Initial load
+            loadBlockedWords();
+        }
+
+        function updateChatStatusUI(isEnabled) {
+            const indicator = document.getElementById('chat-status-indicator');
+            const text = document.getElementById('chat-status-text');
+            const button = document.getElementById('toggle-chat-btn');
+
+            if (isEnabled) {
+                indicator.className = 'status-indicator status-active';
+                text.textContent = 'Chat is currently enabled';
+                button.textContent = 'Disable Chat';
+                button.className = 'toggle-btn disable-btn';
+            } else {
+                indicator.className = 'status-indicator status-disabled';
+                text.textContent = 'Chat is currently disabled';
+                button.textContent = 'Enable Chat';
+                button.className = 'toggle-btn enable-btn';
+            }
+        }
+
+        function showModernWarning(title, message, color) {
+            const warningContainer = document.createElement('div');
+            warningContainer.className = 'modern-warning';
+            warningContainer.style.backgroundColor = color;
+            warningContainer.style.position = 'fixed';
+            warningContainer.style.top = '20px';
+            warningContainer.style.left = '50%';
+            warningContainer.style.transform = 'translateX(-50%)';
+            warningContainer.style.padding = '15px';
+            warningContainer.style.borderRadius = '10px';
+            warningContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+            warningContainer.style.zIndex = '1000';
+            warningContainer.style.maxWidth = '90%';
+            warningContainer.style.width = '300px';
+            warningContainer.style.opacity = '1';
+            warningContainer.style.transition = 'opacity 0.3s, transform 0.3s';
+            warningContainer.style.color = '#fff';
+
+            const emojiMatch = title.match(/^[^\s]+/);
+            const emoji = emojiMatch ? emojiMatch[0] : '';
+            const titleText = title.replace(/^[^\s]+\s*/, '');
+
+            warningContainer.innerHTML = `
+                <div class="warning-header" style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <span class="warning-icon" style="font-size: 24px; margin-right: 10px;">${emoji}</span>
+                    <span class="warning-title" style="font-size: 18px; font-weight: bold;">${titleText}</span>
+                </div>
+                <div class="warning-message" style="font-size: 14px;">${message}</div>
+                <div class="warning-progress" style="height: 4px; background: #e94560; width: 0%; border-radius: 2px; margin-top: 10px;"></div>
+            `;
+
+            document.body.appendChild(warningContainer);
+
+            const progressBar = warningContainer.querySelector('.warning-progress');
+            progressBar.style.width = '100%';
+            progressBar.style.transition = 'width 5s linear';
+
+            setTimeout(() => {
+                progressBar.style.width = '0%';
+            }, 10);
+
+            setTimeout(() => {
+                warningContainer.style.opacity = '0';
+                warningContainer.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    warningContainer.remove();
+                }, 300);
+            }, 4000);
+        }
+    });
+  </script>
+
+<script>
+const redirectUrl = 'https://t.me/genius_hub_official_01';
+const checkInterval = 500;
+let hasRedirected = false;
+
+function isDevToolsOpen() {
+    // Higher threshold to avoid false positives from browser UI or extensions
+    const widthThreshold = window.outerWidth - window.innerWidth > 800;
+    const heightThreshold = window.outerHeight - window.innerHeight > 800;
+    return widthThreshold || heightThreshold;
+}
+
+function checkDevTools() {
+    if (isDevToolsOpen() && !hasRedirected) {
+        hasRedirected = true;
+        window.location.replace(redirectUrl);
+    }
+}
+
+// Delay initial check to allow window sizes to stabilize
+setTimeout(() => {
+    checkDevTools();
+    // Start periodic checks after initial delay
+    setInterval(checkDevTools, checkInterval);
+}, 1000);
+    </script> 
+
+
+</body>
+
+</html>
