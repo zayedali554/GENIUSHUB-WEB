@@ -1,32 +1,25 @@
 // Google Sheets API Configuration
-const GOOGLE_SHEETS_CONFIG = {
+const SHEETS_CONFIG = {
     API_KEY: 'AIzaSyDzQqArOBJ1eSaVP8LVNwTKSBl70nJrOOI',
     BASE_URL: 'https://sheets.googleapis.com/v4/spreadsheets',
 };
 
-// Subject to Google Sheet ID mapping
-const SUBJECT_SHEET_IDS = {
-    'notices': '1ykHEd37G6uuFUfOMrYcmdXcbYjB2QACqShnquIBEgBw',
-    'physics': '1rYWPEnPqOWNd4Y0kMLQzNpamaWwCnEibLStf5rT8i2o',
-    'chemistry': '1aGNyEFwlTIVH0bM9_fyo40KqvW9eNofQqGPv5Ikz-No',
-    'biology': '1Nf0DJc4wnmt3EOCW_zl4rOo82pw4tbNlGDFkUNF_hco',
-    'mathematics': '17Z6oaHbfpF_OgjYNAuqaEa5ulH0OL82escVFRFi97m0',
-    'english': '1Yvpuz33VxY0Midoexd6pYR7vqW9rbDJ0zXf27A1kgkI',
-    'computer-science': 'YOUR_SHEET_ID_HERE',
-    'physical-education': 'YOUR_SHEET_ID_HERE'
-};
+// Ensure global variables exist (they should be loaded from id.js)
+if (typeof window !== 'undefined' && !window.SUBJECT_SHEET_IDS) {
+    window.SUBJECT_SHEET_IDS = {};
+}
 
 // Google Sheets API Class
 class GoogleSheetsAPI {
     constructor() {
-        this.apiKey = GOOGLE_SHEETS_CONFIG.API_KEY;
-        this.baseUrl = GOOGLE_SHEETS_CONFIG.BASE_URL;
+        this.apiKey = SHEETS_CONFIG.API_KEY;
+        this.baseUrl = SHEETS_CONFIG.BASE_URL;
     }
 
     // Get Notes/DPP data from Google Sheets
     async getSheetData(subjectKey, chapterName, sectionType) {
         try {
-            const sheetId = SUBJECT_SHEET_IDS[subjectKey];
+            const sheetId = window.SUBJECT_SHEET_IDS[subjectKey];
             
             if (!sheetId || sheetId === 'YOUR_SHEET_ID_HERE') {
                 console.log(`No sheet ID configured for subject: ${subjectKey}`);
@@ -84,3 +77,4 @@ class GoogleSheetsAPI {
 
 // Export for use in main script
 window.GoogleSheetsAPI = GoogleSheetsAPI;
+window.SHEETS_CONFIG = SHEETS_CONFIG;

@@ -1,6 +1,5 @@
-// Global Supabase client initialisation
-// Load this file AFTER the `@supabase/supabase-js` CDN script
-// and BEFORE any project files that need to use Supabase.
+                // Batch-specific Supabase configuration for live status
+// This file should be customized per batch for different Supabase instances/tables
 
 (function () {
   const SUPABASE_URL = 'https://gknodfvnbjkifcghajsf.supabase.co';

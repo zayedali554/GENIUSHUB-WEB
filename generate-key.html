@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Access Key - Genius Hub</title>
+  <link rel="icon" type="image/png" sizes="any"
+        href="https://gknodfvnbjkifcghajsf.supabase.co/storage/v1/object/sign/logo/logo.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lMTI1ZTg2Ny04ODI1LTRmMDktOTExNS01YjYyZDZmMmNlYTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJsb2dvL2xvZ28uanBnIiwiaWF0IjoxNzUxNjk1MzQwLCJleHAiOjMzMjU2MTU5MzQwfQ.ZKq1SAE3ShgV9gZiFJTov9CV9vNBimARDqnXJwkjZW4">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0a0a0a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .logo {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    p {
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    #generateKey {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #generateKey:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    #generateKey:active {
+      transform: translateY(0);
+    }
+
+    #generateKey:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .loading {
+      margin-top: 25px;
+      font-size: 16px;
+      color: #667eea;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .loading.show {
+      display: flex;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .success-message {
+      background: #e8f5e8;
+      border: 2px solid #28a745;
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+      color: #155724;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .access-key {
+      background: #333;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      word-break: break-all;
+      letter-spacing: 1px;
+    }
+
+    .continue-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 15px;
+    }
+
+    .continue-btn:hover {
+      background: #218838;
+      transform: translateY(-1px);
+    }
+
+    .features {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      text-align: center;
+    }
+
+    .feature {
+      background: rgba(102, 126, 234, 0.1);
+      padding: 15px 10px;
+      border-radius: 12px;
+      color: #667eea;
+      font-size: 0.9rem;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 5px;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .error-message {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        margin: 20px;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bgCanvas"></canvas>
+  
+  <div class="container">
+    <div class="logo">🔑</div>
+    <h2>Get Access to Genius Hub</h2>
+    <p>Complete the verification process to generate your 48-hour access key and unlock all educational content.</p>
+    
+    <button id="generateKey">🚀 Generate Access Key</button>
+    
+    <div class="loading" id="loadingMessage">
+      <div class="spinner"></div>
+      <span>Generating secure access key...</span>
+    </div>
+    
+    <div class="success-message" id="successMessage">
+      <h4>🎉 Access Key Generated Successfully!</h4>
+      <div class="access-key" id="accessKeyDisplay"></div>
+      <p>Your access is valid for <strong>48 hours</strong></p>
+      <button class="continue-btn" id="continueBtn">Continue to Genius Hub</button>
+    </div>
+    
+    <div class="error-message" id="errorMessage">
+      <strong>Error:</strong> <span id="errorText"></span>
+    </div>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">⏰</div>
+        <div>48 Hour Access</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔒</div>
+        <div>Secure & Safe</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📚</div>
+        <div>All Content</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // 3D Background Animation
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bgCanvas'), alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    // Create particles
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1000;
+    const posArray = new Float32Array(particlesCount * 3);
+
+    for (let i = 0; i < particlesCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 10;
+    }
+
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+    const particlesMaterial = new THREE.PointsMaterial({
+      size: 0.005,
+      color: 0x667eea,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+
+    camera.position.z = 3;
+
+    // Animation
+    function animate() {
+      requestAnimationFrame(animate);
+      particlesMesh.rotation.x += 0.001;
+      particlesMesh.rotation.y += 0.002;
+      renderer.render(scene, camera);
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+
+    // Generate Key Functionality
+    document.getElementById('generateKey').addEventListener('click', async function () {
+      const generateBtn = this;
+      const loadingMessage = document.getElementById('loadingMessage');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+      const accessKeyDisplay = document.getElementById('accessKeyDisplay');
+      const continueBtn = document.getElementById('continueBtn');
+
+      // Reset UI
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+      
+      // Show loading
+      generateBtn.disabled = true;
+      loadingMessage.classList.add('show');
+
+      try {
+        const destinationUrl = '/index.html'; // Your main website
+        const alias = 'genius-hub-access';
+
+        const response = await fetch('/.netlify/functions/generate-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ destinationUrl, alias })
+        });
+
+        const data = await response.json();
+        console.log('Response:', data);
+
+        if (data.success && data.shortenedUrl) {
+          // Store access key with 48-hour expiry
+          const accessData = {
+            key: data.accessKey,
+            timestamp: Date.now(),
+            expiresAt: Date.now() + (48 * 60 * 60 * 1000) // 48 hours
+          };
+          localStorage.setItem('genius_hub_access', JSON.stringify(accessData));
+
+          // Show success message
+          accessKeyDisplay.textContent = data.accessKey;
+          successMessage.classList.add('show');
+
+          // Set up continue button
+          continueBtn.onclick = () => {
+            // First redirect to shortener URL, then to main site
+            window.open(data.shortenedUrl, '_blank');
+            setTimeout(() => {
+              window.location.href = destinationUrl;
+            }, 2000);
+          };
+
+        } else {
+          throw new Error(data.error || 'Failed to generate access key');
+        }
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('errorText').textContent = error.message;
+        errorMessage.classList.add('show');
+      } finally {
+        // Hide loading
+        loadingMessage.classList.remove('show');
+        generateBtn.disabled = false;
+      }
+    });
+
+    // Check if user already has valid access
+    function checkExistingAccess() {
+      try {
+        const accessData = localStorage.getItem('genius_hub_access');
+        if (accessData) {
+          const { timestamp, expiresAt } = JSON.parse(accessData);
+          const now = Date.now();
+          
+          if (now < expiresAt) {
+            // User has valid access, redirect to main site
+            const remainingHours = Math.floor((expiresAt - now) / (60 * 60 * 1000));
+            if (confirm(`You already have ${remainingHours} hours of access remaining. Continue to Genius Hub?`)) {
+              window.location.href = '/index.html';
+            }
+          } else {
+            // Access expired, clear storage
+            localStorage.removeItem('genius_hub_access');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking access:', error);
+      }
+    }
+
+    // Check access on page load
+    checkExistingAccess();
+  </script>
+</body>
+</html>

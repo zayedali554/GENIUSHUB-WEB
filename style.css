@@ -832,6 +832,15 @@ body {
 }
 
 /* Responsive Design */
+/* Fix subjects grid for medium-large screens */
+@media (min-width: 1025px) and (max-width: 1247px) {
+    .subjects-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(4, 1fr);
+        gap: 20px;
+    }
+}
+
 @media (min-width: 769px) and (max-width: 1024px) {
     .title {
         font-size: 3em;

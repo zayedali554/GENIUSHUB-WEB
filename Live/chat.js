@@ -1,6 +1,22 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Function to initialize chat - works for both DOMContentLoaded and dynamic loading
+function initializeChatSystem() {
+  console.log('Chat.js: Initializing chat system');
+  
+  // Get batch parameter from URL for batch-specific username storage
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentBatch = urlParams.get('batch') || 'default';
+  console.log('Chat.js: Current batch =', currentBatch);
+  
   // Reuse global Supabase client (initialised in supabaseClient.js)
   const supabase = window.supabaseClient;
+
+  // Check if Supabase client is available
+  if (!supabase) {
+    console.error('Supabase client not available in chat.js');
+    return;
+  }
+
+  console.log('Chat.js: Supabase client is available');
 
   // Security constants
   const BLOCKED_URL_PATTERNS = [
@@ -12,13 +28,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Fetch blocked words from Supabase
   (async () => {
-    const { data, error } = await supabase
-      .from('blocked_words')
-      .select('word');
+    try {
+      console.log('Chat.js: Fetching blocked words from Supabase');
+      const { data, error } = await supabase
+        .from('blocked_words')
+        .select('word');
     
-    if (!error && data) {
-      BLOCKED_WORDS = data.map(item => item.word);
-    } else {
+      if (!error && data) {
+        BLOCKED_WORDS = data.map(item => item.word);
+        console.log('Chat.js: Blocked words loaded from Supabase');
+      } else {
+        console.warn('Chat.js: Failed to fetch blocked words, using fallback');
+        // Fallback to default words if fetch fails
+        BLOCKED_WORDS = [
+          'ass', 'fuck', 'fuckk', 'motherfuck', 'bhenchod', 'madarchod', 'bsdk', 'bhosdike',
+          'chutiya', 'subscribe', 'harami', 'bhadwa', 'fuckkk', 'XXX', 'XXXX', 'porn', 'sex', 'sexx',
+          'f@ck', 'sexxx', 'gand', 'land', 'loda', 'gandu', 'lodu', 'lamd', 'pornn'
+        ];
+      }
+    } catch (err) {
+      console.error('Chat.js: Error fetching blocked words:', err);
       // Fallback to default words if fetch fails
       BLOCKED_WORDS = [
         'ass', 'fuck', 'fuckk', 'motherfuck', 'bhenchod', 'madarchod', 'bsdk', 'bhosdike',
@@ -87,12 +116,17 @@ document.addEventListener('DOMContentLoaded', () => {
     '#34495e', '#95a5a6', '#7f8c8d', '#607d8b', '#546e7a', '#78909c', '#90a4ae', '#b0bec5'
   ];
 
-  // Check for stored username
-  const storedUser = localStorage.getItem('currentUser');
+  // Check for stored username (batch-specific)
+  const userStorageKey = `currentUser_${currentBatch}`;
+  const storedUser = localStorage.getItem(userStorageKey);
+  console.log('Chat.js: Checking for stored user with key:', userStorageKey);
+  
   if (storedUser) {
     currentUser = JSON.parse(storedUser);
+    console.log('Chat.js: Found stored user for batch:', currentBatch, currentUser.username);
     initChat();
   } else {
+    console.log('Chat.js: No stored user for batch:', currentBatch, '- showing username modal');
     document.getElementById('username-modal').style.display = 'block';
     document.getElementById('username-submit').addEventListener('click', setUsername);
     document.getElementById('username-input').addEventListener('keypress', (e) => {
@@ -196,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lastNameChange: null
     };
 
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    localStorage.setItem(userStorageKey, JSON.stringify(currentUser));
 
     // Add user to online table
     await supabase
@@ -229,6 +263,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function initChat() {
+    console.log('InitChat: Starting chat initialization');
+    
+    // Check if Supabase client is available
+    if (!supabase) {
+      console.error('InitChat: Supabase client not available');
+      return;
+    }
+    
     const messagesContainer = document.getElementById('chat-messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
@@ -241,16 +283,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Check ban status on load
-    const { data: banned } = await supabase
-        .from('banned_users')
-        .select('id, reason')
-        .eq('id', currentUser.id)
-        .single();
-    if (banned) {
-        applyBanToInput(banned.reason);
+    let banned = null;
+    try {
+      console.log('InitChat: Checking ban status for user:', currentUser.id);
+      const { data: banData } = await supabase
+          .from('banned_users')
+          .select('id, reason')
+          .eq('id', currentUser.id)
+          .single();
+      
+      banned = banData;
+      if (banned) {
+          console.log('InitChat: User is banned:', banned.reason);
+          applyBanToInput(banned.reason);
+      }
+    } catch (error) {
+      console.error('InitChat: Error checking ban status:', error);
+      // Continue with chat initialization even if ban check fails
     }
-    
-    
 
     // Check for existing timeout
     if (userTimeoutEnd[currentUser.id] && userTimeoutEnd[currentUser.id] > Date.now()) {
@@ -1433,4 +1483,12 @@ async function displayMessage(message, messageId, isCurrentUserAdmin, isChatEnab
     }
   });
 
-});
+}
+
+// Initialize chat system when DOM is ready or immediately if DOM is already ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeChatSystem);
+} else {
+  // DOM is already ready, initialize immediately
+  initializeChatSystem();
+}

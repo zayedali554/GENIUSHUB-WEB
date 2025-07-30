@@ -11,10 +11,100 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="main.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <script src="chat.js"></script>
-  <script disable-devtool-auto="true" src="https://cdn.jsdelivr.net/npm/disable-devtool" clear-log="true"
-        disable-select="true" disable-copy="true" disable-cut="true" disable-paste="false"></script>
+    <script>
+        // Dynamic config loading based on batch parameter
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const batch = urlParams.get('batch') || 'uday2026'; // Default batch
+            
+            // Load batch-specific config first, then load other scripts
+            const configScript = document.createElement('script');
+            configScript.src = `../batches/${batch}/live-config.js`;
+            
+            configScript.onload = function() {
+                console.log('Batch-specific config loaded successfully');
+                
+                // Wait and check for Supabase client availability
+                function waitForSupabase(attempts = 0) {
+                    if (window.supabaseClient) {
+                        console.log('Supabase client confirmed available, loading scripts');
+                        loadScripts();
+                    } else if (attempts < 10) {
+                        console.log('Waiting for Supabase client... attempt', attempts + 1);
+                        setTimeout(() => waitForSupabase(attempts + 1), 200);
+                    } else {
+                        console.error('Supabase client not available after waiting');
+                    }
+                }
+                
+                function loadScripts() {
+                    // Load chat.js after config is confirmed ready
+                    const chatScript = document.createElement('script');
+                    chatScript.src = 'chat.js';
+                    chatScript.onload = function() {
+                        console.log('chat.js loaded successfully');
+                        // Load player.js after chat.js is loaded
+                        const playerScript = document.createElement('script');
+                        playerScript.src = 'player.js';
+                        playerScript.onload = function() {
+                            console.log('player.js loaded successfully');
+                        };
+                        document.head.appendChild(playerScript);
+                    };
+                    document.head.appendChild(chatScript);
+                }
+                
+                waitForSupabase();
+            };
+            
+            configScript.onerror = function() {
+                console.error('Failed to load batch-specific config, falling back to default');
+                // Fallback to a default config if batch-specific fails
+                const fallbackScript = document.createElement('script');
+                fallbackScript.src = '../batches/uday2026/live-config.js';
+                fallbackScript.onload = function() {
+                    console.log('Fallback config loaded successfully');
+                    
+                    // Wait and check for Supabase client availability (fallback)
+                    function waitForSupabaseFallback(attempts = 0) {
+                        if (window.supabaseClient) {
+                            console.log('Supabase client confirmed available (fallback), loading scripts');
+                            loadScriptsFallback();
+                        } else if (attempts < 10) {
+                            console.log('Waiting for Supabase client (fallback)... attempt', attempts + 1);
+                            setTimeout(() => waitForSupabaseFallback(attempts + 1), 200);
+                        } else {
+                            console.error('Supabase client not available after waiting (fallback)');
+                        }
+                    }
+                    
+                    function loadScriptsFallback() {
+                        // Load chat.js after fallback config is confirmed ready
+                        const chatScript = document.createElement('script');
+                        chatScript.src = 'chat.js';
+                        chatScript.onload = function() {
+                            console.log('chat.js loaded successfully (fallback)');
+                            // Load player.js after chat.js is loaded
+                            const playerScript = document.createElement('script');
+                            playerScript.src = 'player.js';
+                            playerScript.onload = function() {
+                                console.log('player.js loaded successfully (fallback)');
+                            };
+                            document.head.appendChild(playerScript);
+                        };
+                        document.head.appendChild(chatScript);
+                    }
+                    
+                    waitForSupabaseFallback();
+                };
+                document.head.appendChild(fallbackScript);
+            };
+            
+            document.head.appendChild(configScript);
+        })();
+    </script>
+  <!-- <script disable-devtool-auto="true" src="https://cdn.jsdelivr.net/npm/disable-devtool" clear-log="true"
+        disable-select="true" disable-copy="true" disable-cut="true" disable-paste="false"></script> -->
 </head>
 <body>
 
@@ -178,7 +268,7 @@
                 </div>
             </div>
         </div>
-        <script src="player.js"></script>
+        <!-- player.js will be loaded dynamically after config -->
     </div>
 
 
@@ -256,7 +346,7 @@
         </div>
     </footer>
 
-<script>
+<!-- <script>
 const redirectUrl = 'https://t.me/genius_hub_official_01';
 const checkInterval = 500;
 let hasRedirected = false;
@@ -281,7 +371,7 @@ setTimeout(() => {
     // Start periodic checks after initial delay
     setInterval(checkDevTools, checkInterval);
 }, 1000);
-    </script>
+    </script> -->
 
 </body>
 
