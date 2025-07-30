@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Access Verified - Genius Hub</title>
+  <link rel="icon" type="image/png" sizes="any"
+        href="https://gknodfvnbjkifcghajsf.supabase.co/storage/v1/object/sign/logo/logo.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9lMTI1ZTg2Ny04ODI1LTRmMDktOTExNS01YjYyZDZmMmNlYTEiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJsb2dvL2xvZ28uanBnIiwiaWF0IjoxNzUxNjk1MzQwLCJleHAiOjMzMjU2MTU5MzQwfQ.ZKq1SAE3ShgV9gZiFJTov9CV9vNBimARDqnXJwkjZW4">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 90%;
+      color: #333;
+    }
+
+    .success-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      animation: bounce 1s ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      60% { transform: translateY(-10px); }
+    }
+
+    h1 {
+      color: #28a745;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+      color: #666;
+    }
+
+    .access-info {
+      background: #e8f5e8;
+      border: 2px solid #28a745;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      color: #155724;
+    }
+
+    .continue-btn {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .continue-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(40, 167, 69, 0.4);
+    }
+
+    .countdown {
+      font-size: 1.1rem;
+      color: #667eea;
+      margin-top: 20px;
+      font-weight: 600;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .feature {
+      background: rgba(102, 126, 234, 0.1);
+      padding: 15px;
+      border-radius: 12px;
+      color: #667eea;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 30px 20px;
+        margin: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="success-icon">🎉</div>
+    <h1>Verification Complete!</h1>
+    <p>Congratulations! You have successfully completed the verification process.</p>
+    
+    <div class="access-info">
+      <h3>✅ 48-Hour Access Granted</h3>
+      <p>You now have full access to all Genius Hub educational content for the next 48 hours.</p>
+    </div>
+    
+    <a href="/index.html" class="continue-btn" id="continueBtn">
+      🚀 Enter Genius Hub
+    </a>
+    
+    <div class="countdown" id="countdown">
+      Redirecting automatically in <span id="timer">10</span> seconds...
+    </div>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📚</div>
+        <div><strong>All Subjects</strong><br>Physics, Chemistry, Math</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎥</div>
+        <div><strong>Video Lectures</strong><br>HD Quality Content</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📝</div>
+        <div><strong>Notes & DPP</strong><br>Practice Materials</div>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💬</div>
+        <div><strong>Live Chat</strong><br>Interactive Sessions</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Verify access and set up 48-hour access
+    function grantAccess() {
+      const accessKey = 'VERIFIED_' + Math.random().toString(36).substr(2, 12).toUpperCase() + '_' + Date.now().toString(36).toUpperCase();
+      const accessData = {
+        key: accessKey,
+        timestamp: Date.now(),
+        expiresAt: Date.now() + (48 * 60 * 60 * 1000), // 48 hours
+        verified: true,
+        verificationTime: new Date().toISOString()
+      };
+      
+      localStorage.setItem('genius_hub_access', JSON.stringify(accessData));
+      console.log('✅ 48-hour access granted:', accessKey);
+      
+      // Show success message
+      console.log('🎉 Welcome to Genius Hub! Access expires in 48 hours.');
+    }
+
+    // Auto-redirect countdown
+    let timeLeft = 10;
+    const timerElement = document.getElementById('timer');
+    const countdownElement = document.getElementById('countdown');
+    
+    function updateCountdown() {
+      timerElement.textContent = timeLeft;
+      
+      if (timeLeft <= 0) {
+        window.location.href = '/index.html';
+        return;
+      }
+      
+      timeLeft--;
+      setTimeout(updateCountdown, 1000);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Grant access immediately
+      grantAccess();
+      
+      // Start countdown
+      updateCountdown();
+      
+      // Handle manual continue button
+      document.getElementById('continueBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = '/index.html';
+      });
+    });
+
+    // Check if user came from generate-key page
+    const returnUrl = sessionStorage.getItem('genius_hub_return_url');
+    if (returnUrl) {
+      sessionStorage.removeItem('genius_hub_return_url');
+      // Could redirect to original page instead of index.html
+    }
+  </script>
+</body>
+</html>
