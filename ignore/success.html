@@ -623,18 +623,24 @@
         
         const referrer = document.referrer;
         
-        // Check if referrer is valid (must be from the shortener service)
-        // Updated to accept both short-link.me and ngrok domains
-        const isValidReferrer = referrer && (referrer.startsWith('https://short-link.me/') || referrer.includes('ngrok-free.app'));
-        
-        // Check for token parameter
+        // Check for token parameter (most important validation)
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         const isValidToken = token === 'auth-success';
         
-        // Security: BOTH valid referrer AND valid token are required
-        // This prevents direct access and ensures proper flow through shortener
-        return isValidReferrer && isValidToken;
+        // Additional security: Check if accessed via proper flow
+        // For shorteners, we rely primarily on the token since referrer gets overwritten
+        // Only block if there's no token AND it's a direct access (empty referrer)
+        const isDirectAccess = !referrer || referrer === '';
+        const isValidAccess = isValidToken && !isDirectAccess;
+        
+        console.log('Referrer:', referrer);
+        console.log('Token valid:', isValidToken);
+        console.log('Direct access:', isDirectAccess);
+        console.log('Valid access:', isValidAccess);
+        
+        // Primary security is the token - referrer is secondary
+        return isValidAccess;
     }
     
     async function grantAccess() {
