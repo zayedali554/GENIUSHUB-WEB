@@ -1,9 +1,14 @@
 # Netlify redirects file
-# Redirect live classes URL to show only /player in the URL
+# Hide /Live from URL when accessing live classes
 
-# Rewrite /player to serve content from /live/player
-/player    /live/player.html    200
+# Main redirect: /player serves Live/player.html but shows clean URL
+/player    /Live/player.html    200
 
-# Optional: Redirect old /live/player URLs to clean /player URL
-/live/player    /player    301
-/live/player.html    /player    301
+# Redirect all variations to clean /player URL
+/Live/player    /player    301!
+/Live/player.html    /player    301!
+/live/player    /player    301!
+/live/player.html    /player    301!
+
+# Handle direct access to Live directory
+/Live/*    /player    301!
