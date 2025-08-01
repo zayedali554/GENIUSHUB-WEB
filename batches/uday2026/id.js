@@ -38,7 +38,7 @@ const CHAPTER_PLAYLISTS = {
 
     // Mathematics Chapters
     'Sets': 'PL6NSTQ0P5K06z4c_fiuwP-earmQZ23133',
-    'Relations And Functions': 'PL6NSTQ0P5K04Cu2KlKGC85P0KvzpHDUXn',
+    'Relation and Functions': 'PL6NSTQ0P5K04Cu2KlKGC85P0KvzpHDUXn',
     'Trigonometric Functions': 'PL6NSTQ0P5K06Smsp_Gbhphj-CjGEhMQcf',
     'Principle of Mathematical Induction': 'PL6NSTQ0P5K06z7zAvO7D3eZSxDDbBE_-p',
     'Complex Numbers and Quadratic Equations': 'YOUR_PLAYLIST_ID_HERE',
@@ -164,7 +164,7 @@ const chaptersData = {
         chapters: [
             { name: 'Sets' },
             { name: 'Linear Inequations' },
-            { name: 'Relations And Functions' },
+            { name: 'Relation and Functions' },
             { name: 'Basic Mathematics' },
             { name: 'Trigonometric Functions' },
             // { name: 'Principle of Mathematical Induction' },

@@ -38,7 +38,26 @@ body {
   overflow-x: hidden;
   padding-bottom: 0px;
   padding-top: 0px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif;                    background-size: 400% 400%;
+  animation: gradientBG 20s ease-in-out infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+      background-position: 0% 50%;
+  }
+  25% {
+      background-position: 100% 0%;
+  }
+  50% {
+      background-position: 100% 100%;
+  }
+  75% {
+      background-position: 0% 100%;
+  }
+  100% {
+      background-position: 0% 50%;
+  }
 }
 
 @media (min-width: 769px) {

@@ -21,6 +21,26 @@ body {
         radial-gradient(circle at 60% 40%, rgba(0, 195, 255, 0.06) 0%, transparent 50%);
     min-height: 100vh;
     color: #fff;
+    background-size: 400% 400%;
+animation: gradientBG 20s ease-in-out infinite;
+}
+
+@keyframes gradientBG {
+0% {
+    background-position: 0% 50%;
+}
+25% {
+    background-position: 100% 0%;
+}
+50% {
+    background-position: 100% 100%;
+}
+75% {
+    background-position: 0% 100%;
+}
+100% {
+    background-position: 0% 50%;
+}
 }
 
 @media (min-width: 769px) {

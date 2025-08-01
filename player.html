@@ -15,7 +15,6 @@
     <style>
         /* Ensure body background shows through */
         body {
-            background: linear-gradient(135deg, #000016 0%, #00122c 100%) !important;
             font-family: 'Poppins', sans-serif;
         }
 
@@ -614,12 +613,70 @@
             const chapterInfo = getChapterInfo();
 
             if (!videoId) {
-                document.getElementById('loading').textContent = 'Error: No video ID provided';
+                // Hide the loading screen and show error message
+                hideLoading();
+
+                // Hide the video title when no video ID is found
+                const videoTitleElement = document.getElementById('videoTitle');
+                videoTitleElement.textContent = '';
+                videoTitleElement.style.display = 'none';
+
+                // Create and show error message in place of video player
+                const videoWrapper = document.querySelector('.video-wrapper');
+                const playerElement = document.getElementById('player');
+
+                // Hide the player element
+                playerElement.style.display = 'none';
+
+                // Create error message container
+                const errorContainer = document.createElement('div');
+                errorContainer.style.cssText = `
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 300px;
+                    background: rgba(255, 107, 107, 0.1);
+                    border: 2px solid rgba(255, 107, 107, 0.3);
+                    border-radius: 12px;
+                    padding: 40px 20px;
+                    text-align: center;
+                    backdrop-filter: blur(5px);
+                `;
+
+                // Create error icon
+                const errorIcon = document.createElement('div');
+                errorIcon.innerHTML = '⚠️';
+                errorIcon.style.cssText = `
+                    font-size: 4rem;
+                    margin-bottom: 20px;
+                    opacity: 0.8;
+                `;
+
+                // Create error title
+                const errorTitle = document.createElement('h2');
+                errorTitle.textContent = 'No Video ID Found';
+                errorTitle.style.cssText = `
+                    color: #ff6b6b;
+                    font-size: 1.8rem;
+                    font-weight: 700;
+                    margin: 0 0 15px 0;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                `;
+
+
+                // Append all elements
+                errorContainer.appendChild(errorIcon);
+                errorContainer.appendChild(errorTitle);
+
+                // Insert error container after the player element
+                playerElement.parentNode.insertBefore(errorContainer, playerElement.nextSibling);
+
                 return;
             }
 
             // Set video title from URL parameter or use default
-            const videoTitle = chapterInfo.title || 'Video Lecture';
+            const videoTitle = chapterInfo.title || 'Loading..';
             document.getElementById('videoTitle').textContent = videoTitle;
             document.title = `${videoTitle} - UDAY 2026`;
 
