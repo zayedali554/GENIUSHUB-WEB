@@ -10,13 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show popup on page load
         popup.style.display = 'flex';
 
-        // Set URL hash to #batches for main homepage (only for local development)
-        // Skip hash setting if on Netlify or production
-        const isNetlify = window.location.hostname.includes('.netlify.app') || 
-                         window.location.hostname.includes('netlify.com') ||
-                         window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-        
-        if (!window.location.hash && !isNetlify) {
+        // Set URL hash to #batches for main homepage
+        if (!window.location.hash) {
             window.location.hash = '#batches';
         }
 
