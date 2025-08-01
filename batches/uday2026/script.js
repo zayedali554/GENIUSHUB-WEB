@@ -306,10 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
         subjectTitle.textContent = subjectData.title;
         currentSubjectName = subjectData.title;
 
-        // Preload Notes and DPP data in background for faster tab switching
-        preloadSheetData(subjectData.title).catch(err => {
-            console.warn('Background preloading failed:', err);
-        });
+
 
         // Clear existing chapters
         chaptersContent.innerHTML = '';
@@ -491,11 +488,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentActiveTab = 'lectures';
     let lastChapterName = '';
 
-    // Cache for Notes and DPP data to improve loading speed
-    const notesCache = new Map();
-    const dppCache = new Map();
-    const sheetDataCache = new Map(); // Cache entire sheet data
-
     // Initialize YouTube API
     const youtubeAPI = new YouTubeAPI(YOUTUBE_CONFIG.API_KEY);
 
@@ -506,66 +498,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.youtubeAPI = youtubeAPI;
     window.googleSheetsAPI = googleSheetsAPI;
 
-    // Optimized cached fetching functions for Notes and DPP
-    async function getCachedNotesData(subjectKey, chapterName) {
-        const cacheKey = `${subjectKey}_${chapterName}_notes`;
-        
-        if (notesCache.has(cacheKey)) {
-            return notesCache.get(cacheKey);
-        }
-        
-        try {
-            const data = await window.googleSheetsAPI.getSheetData(subjectKey, chapterName, 'Notes');
-            notesCache.set(cacheKey, data);
-            return data;
-        } catch (error) {
-            console.error('Error fetching notes data:', error);
-            return [];
-        }
-    }
 
-    async function getCachedDPPData(subjectKey, chapterName) {
-        const cacheKey = `${subjectKey}_${chapterName}_dpp`;
-        
-        if (dppCache.has(cacheKey)) {
-            return dppCache.get(cacheKey);
-        }
-        
-        try {
-            const data = await window.googleSheetsAPI.getSheetData(subjectKey, chapterName, 'DPP');
-            dppCache.set(cacheKey, data);
-            return data;
-        } catch (error) {
-            console.error('Error fetching DPP data:', error);
-            return [];
-        }
-    }
-
-    // Preload Notes and DPP data for better performance
-    async function preloadSheetData(subjectName) {
-        const subjectKey = Object.keys(chaptersData).find(key =>
-            chaptersData[key].title.toLowerCase() === subjectName.toLowerCase()
-        ) || subjectName.toLowerCase();
-
-        if (!chaptersData[subjectKey]) return;
-
-        // Preload data for all chapters in parallel
-        const preloadPromises = chaptersData[subjectKey].chapters.map(async (chapter) => {
-            try {
-                // Load both Notes and DPP in parallel for each chapter
-                await Promise.all([
-                    getCachedNotesData(subjectKey, chapter.name),
-                    getCachedDPPData(subjectKey, chapter.name)
-                ]);
-            } catch (error) {
-                console.warn(`Failed to preload data for chapter: ${chapter.name}`, error);
-            }
-        });
-
-        // Execute all preload operations in parallel
-        await Promise.allSettled(preloadPromises);
-        console.log(`Preloaded Notes and DPP data for ${subjectName}`);
-    }
 
     // Function to load content based on tab
     async function loadContent(tabType, chapterName, subjectName) {
@@ -843,8 +776,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     chaptersData[key].title.toLowerCase() === subjectName.toLowerCase()
                 ) || subjectName.toLowerCase();
 
-                // Fetch notes data from cache (much faster)
-                const notesData = await getCachedNotesData(subjectKey, chapterName);
+                // Fetch notes data directly from Google Sheets
+                const notesData = await window.googleSheetsAPI.getSheetData(subjectKey, chapterName, 'Notes');
 
                 // Clear loading message
                 contentGrid.innerHTML = '';
@@ -1021,8 +954,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     chaptersData[key].title.toLowerCase() === subjectName.toLowerCase()
                 ) || subjectName.toLowerCase();
 
-                // Fetch DPP data from cache (much faster)
-                const dppData = await getCachedDPPData(subjectKey, chapterName);
+                // Fetch DPP data directly from Google Sheets
+                const dppData = await window.googleSheetsAPI.getSheetData(subjectKey, chapterName, 'DPP');
 
                 // Clear loading message
                 contentGrid.innerHTML = '';
