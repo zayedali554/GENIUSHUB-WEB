@@ -12,6 +12,8 @@
     <script src="sheet-config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="Live/config.js"></script>
+    <script disable-devtool-auto="true" src="https://cdn.jsdelivr.net/npm/disable-devtool" clear-log="true"
+    disable-select="true" disable-copy="true" disable-cut="true" disable-paste="false"></script>
 </head>
 
 <body>
@@ -190,6 +192,75 @@
     </main>
 
     <script src="script.js?v=5.0"></script>
+    <script>
+        // CONSOLE
+        const originalConsole = {
+log: console.log,
+warn: console.warn,
+error: console.error,
+info: console.info,
+debug: console.debug
+};
+
+originalConsole.log('%c💀 %c𝕀ℕ𝕊ℙ𝔼ℂ𝕋 ??', 
+'font-size: 50px;',
+'color: #ff0000; font-size: 50px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);'
+);
+originalConsole.log('%c😂 %c𝕂𝕪𝕒 𝕄𝕚𝕝𝕖𝕘𝕒 𝕀𝕟𝕤𝕡𝕖𝔠𝕥 𝕂𝕒𝕣𝕜𝕖 ?', 
+'font-size: 30px;',
+'color: #ff6b6b; font-size: 30px; font-weight: bold;'
+);
+originalConsole.log('%c✔️ %cℙ𝕒𝕕𝕙𝕒𝕚 𝕂𝕒𝕣𝕝𝕠 ℂ𝕙𝕦𝕡𝔠𝕙𝕒𝕡 !', 
+'font-size: 30px;',
+'color: #ff9500; font-size: 30px; font-weight: bold;'
+);
+
+console.log = function() {};
+console.warn = function() {};
+console.error = function() {};
+console.info = function() {};
+console.debug = function() {};
+console.trace = function() {};
+console.table = function() {};
+console.group = function() {};
+console.groupEnd = function() {};
+console.time = function() {};
+console.timeEnd = function() {};
+console.count = function() {};
+console.assert = function() {};
+console.dir = function() {};
+console.dirxml = function() {};
+console.profile = function() {};
+console.profileEnd = function() {};
+console.timeStamp = function() {};
+console.clear = function() {};
+</script>
+    <script>
+        const redirectUrl = 'https://t.me/genius_hub_official_01';
+        const checkInterval = 500;
+        let hasRedirected = false;
+        
+        function isDevToolsOpen() {
+            // Higher threshold to avoid false positives from browser UI or extensions
+            const widthThreshold = window.outerWidth - window.innerWidth > 800;
+            const heightThreshold = window.outerHeight - window.innerHeight > 800;
+            return widthThreshold || heightThreshold;
+        }
+        
+        function checkDevTools() {
+            if (isDevToolsOpen() && !hasRedirected) {
+                hasRedirected = true;
+                window.location.replace(redirectUrl);
+            }
+        }
+        
+        // Delay initial check to allow window sizes to stabilize
+        setTimeout(() => {
+            checkDevTools();
+            // Start periodic checks after initial delay
+            setInterval(checkDevTools, checkInterval);
+        }, 1000);
+            </script>
 </body>
 
 </html>
